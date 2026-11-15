@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#183d2d">
-<title>Patrick's Vaping Diary</title>
+<title>my vaping diary</title>
 <style>
 :root{--bg:#101a15;--panel:#192820;--panel2:#21372b;--line:#345342;--text:#eef5ef;--muted:#a9bbae;--green:#75bd8b;--green2:#b3e0bd;--danger:#ef9b91;--gold:#f2c96d;--shadow:0 12px 35px #0005}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#234633 0,#101a15 52%);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
@@ -28,12 +28,31 @@ button,.btn{cursor:pointer;font:inherit}.primary{width:100%;border:0;border-radi
 .empty{text-align:center;color:var(--muted);padding:28px 12px}.hidden{display:none!important}
 @media(max-width:560px){.grid{grid-template-columns:1fr 1fr}.cards{gap:7px}.stat{padding:10px}.stat b{font-size:21px}.panel{padding:14px}.grid .full{grid-column:1/-1}}
 @media(max-width:380px){.grid{grid-template-columns:1fr}}
-</style>
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.site-logo {
+    width: 75px;
+    height: 75px;
+    object-fit: contain;
+    flex-shrink: 0;
+}</style>
 </head>
 <body>
 <header>
  <div class="eyebrow">Persönliches Session-Logbuch</div>
- <h1>Patrick's<br>Vaping Diary</h1>
+ <div class="header-brand">
+
+<h1>My Vaping Adventure</h1>
+<img src="Bilder/logo.png"
+alt="My Vaping Adventure Logo"
+class="site-logo">
+         </div>
  <p>Deine Geräte. Deine Sessions. Dein Überblick.</p>
 </header>
 <nav>
@@ -113,7 +132,7 @@ button,.btn{cursor:pointer;font:inherit}.primary{width:100%;border:0;border-radi
 </section>
 <section id="adventure" class="view">
  <div class="panel">
-  <h2>🏆 Patrick's Vaping Adventure</h2>
+  <h2>🏆 My Vaping Adventure</h2>
   <p class="sub">Sammle Erfahrung durch Dokumentation, Lernen, Pflege und bewusste Pausen – nicht durch mehr Konsum.</p>
   <div class="cards"><div class="stat"><b id="xpValue">0</b><span>XP</span></div><div class="stat"><b id="coinValue">0</b><span>Coins</span></div><div class="stat"><b id="levelValue">1</b><span>Level</span></div></div>
   <h3>Questboard</h3><p class="hint">Schließe Aufgaben ab. Jede Quest kann nur einmal Coins/XP vergeben.</p>
@@ -123,7 +142,7 @@ button,.btn{cursor:pointer;font:inherit}.primary{width:100%;border:0;border-radi
 </section>
 <section id="education" class="view">
  <div class="panel">
-  <h2>🎓 Patrick's Vaping Academy</h2>
+  <h2>🎓 My Vaping Academy</h2>
   <p class="sub">Kompakte Lernkurse mit anschließender Prüfung. Bestehen ab 80 %. Inhalte behandeln auch Risiken und sichere Handhabung.</p>
   <div class="cards"><div class="stat"><b id="courseDone">0</b><span>Kurse bestanden</span></div><div class="stat"><b id="eduCoins">0</b><span>Coins verdient</span></div><div class="stat"><b id="bestScore">–</b><span>Beste Prüfung</span></div></div>
   <article class="entry"><h3>Grundkurs: Akkusicherheit</h3><div class="meta">Mini-Kurs · 5 Fragen · 25 Coins · Bestehen ab 4 richtigen Antworten</div>
