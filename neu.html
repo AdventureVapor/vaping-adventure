@@ -1,0 +1,2389 @@
+<!DOCTYPE html>
+
+<html lang="de">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color" content="#183d2d">
+
+<title>Vaping Adventure Alpha 1.2</title>
+
+<style>
+
+:root {
+
+  --bg:#101a15;
+
+  --panel:#1c2d23;
+
+  --green:#75bd8b;
+
+  --light:#b3e0bd;
+
+  --text:#eef5ef;
+
+  --muted:#a9bbae;
+
+  --border:#345342;
+
+}
+
+* {box-sizing:border-box}
+
+body {
+
+  margin:0;
+
+  background:linear-gradient(160deg,#234633,#101a15 65%);
+
+  color:var(--text);
+
+  font-family:Arial,sans-serif;
+
+  min-height:100vh;
+
+}
+
+header {
+
+  padding:22px 16px;
+
+  text-align:center;
+
+}
+
+header img {
+
+  width:85px;
+
+  height:85px;
+
+  object-fit:contain;
+
+}
+
+h1 {margin:8px 0;font-size:29px}
+
+header p {color:var(--muted)}
+
+nav {
+
+  display:flex;
+
+  overflow-x:auto;
+
+  gap:7px;
+
+  padding:10px;
+
+  position:sticky;
+
+  top:0;
+
+  background:#142219;
+
+  z-index:5;
+
+}
+
+nav button {
+
+  white-space:nowrap;
+
+  padding:11px 15px;
+
+  border-radius:30px;
+
+  border:1px solid var(--border);
+
+  background:#203329;
+
+  color:white;
+
+  font-weight:bold;
+
+}
+
+nav button.active {
+
+  background:var(--green);
+
+  color:#102318;
+
+}
+
+main {
+
+  max-width:850px;
+
+  margin:auto;
+
+  padding:12px;
+
+}
+
+.view {display:none}
+
+.view.active {display:block}
+
+.panel {
+
+  background:var(--panel);
+
+  border:1px solid var(--border);
+
+  border-radius:17px;
+
+  padding:17px;
+
+  margin-bottom:14px;
+
+}
+
+h2 {margin-top:0}
+
+label {
+
+  display:block;
+
+  color:var(--light);
+
+  font-size:13px;
+
+  font-weight:bold;
+
+  margin:12px 0 5px;
+
+}
+
+input,select,textarea {
+
+  width:100%;
+
+  padding:12px;
+
+  border-radius:10px;
+
+  border:1px solid var(--border);
+
+  background:#101b14;
+
+  color:white;
+
+  font-size:15px;
+
+}
+
+input[type="file"] {padding:9px}
+
+textarea {min-height:90px}
+
+button {cursor:pointer}
+
+button:disabled {opacity:.5;cursor:not-allowed}
+
+.primary {
+
+  background:var(--green);
+
+  color:#102318;
+
+  border:0;
+
+  border-radius:11px;
+
+  padding:13px;
+
+  width:100%;
+
+  font-weight:bold;
+
+  margin-top:15px;
+
+}
+
+.secondary {
+
+  background:#294333;
+
+  color:white;
+
+  border:1px solid var(--border);
+
+  padding:10px;
+
+  border-radius:9px;
+
+}
+
+.entry {
+
+  background:#203329;
+
+  border:1px solid var(--border);
+
+  border-radius:13px;
+
+  padding:13px;
+
+  margin:10px 0;
+
+}
+
+.entry small {color:var(--muted)}
+
+.row {
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:10px;
+
+}
+
+.stats {
+
+  display:grid;
+
+  grid-template-columns:repeat(3,1fr);
+
+  gap:8px;
+
+}
+
+.stat {
+
+  background:#203329;
+
+  border:1px solid var(--border);
+
+  border-radius:12px;
+
+  padding:13px;
+
+  text-align:center;
+
+}
+
+.stat strong {
+
+  display:block;
+
+  font-size:23px;
+
+  color:var(--light);
+
+}
+
+.tag {
+
+  display:inline-block;
+
+  background:#345342;
+
+  padding:5px 9px;
+
+  border-radius:20px;
+
+  font-size:12px;
+
+  margin:3px;
+
+}
+
+.hidden {display:none!important}
+
+.muted {color:var(--muted);font-size:13px}
+
+.actions {display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+
+.actions button {font-size:12px}
+
+.preview-list {
+
+  max-height:360px;
+
+  overflow-y:auto;
+
+}
+
+.preview-item {
+
+  border-bottom:1px solid var(--border);
+
+  padding:9px 0;
+
+  font-size:13px;
+
+}
+
+.notice {
+
+  background:#294333;
+
+  border:1px solid var(--border);
+
+  border-radius:10px;
+
+  padding:12px;
+
+  margin:10px 0;
+
+  font-size:13px;
+
+}
+
+@media(max-width:450px) {
+
+  .row {grid-template-columns:1fr}
+
+  .stats {gap:5px}
+
+  .stat {padding:8px}
+
+  .stat strong {font-size:19px}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+  <img src="Bilder/logo.png" alt="Vaping Adventure Logo">
+
+  <h1>Vaping Adventure</h1>
+
+  <p>Dein persönliches Vaping-Tagebuch</p>
+
+  <small>ALPHA 1.2</small>
+
+</header>
+
+<nav>
+
+  <button class="active" data-tab="new">＋ Eintrag</button>
+
+  <button data-tab="diary">📖 Tagebuch</button>
+
+  <button data-tab="stats">📊 Statistik</button>
+
+  <button data-tab="devices">⚙ Geräte</button>
+
+  <button data-tab="adventure">🏆 Adventure</button>
+
+  <button data-tab="education">🎓 Education</button>
+
+</nav>
+
+<main>
+
+<!-- NEUER EINTRAG -->
+
+<section id="new" class="view active">
+
+<div class="panel">
+
+<h2 id="formHeading">Neue Session</h2>
+
+<form id="entryForm">
+
+<input type="hidden" id="editId">
+
+<div class="row">
+
+<div>
+
+<label>Datum</label>
+
+<input type="date" id="date" required>
+
+</div>
+
+<div>
+
+<label>Uhrzeit</label>
+
+<input type="time" id="time" required>
+
+</div>
+
+</div>
+
+<label>Gerätekategorie</label>
+
+<select id="category">
+
+<option value="vaporizer">Vaporizer</option>
+
+<option value="ecig">E-Zigarette</option>
+
+<option value="heater">Tabakerhitzer</option>
+
+</select>
+
+<label>Gerät</label>
+
+<select id="device" required></select>
+
+<div class="row">
+
+<div>
+
+<label>Dauer (Minuten)</label>
+
+<input type="number" id="duration" min="0" placeholder="Optional">
+
+</div>
+
+<div>
+
+<label>Anzahl Züge / Puffs</label>
+
+<input type="number" id="puffs" min="0" placeholder="Optional">
+
+</div>
+
+</div>
+
+<label id="strainLabel">Sorte / Material</label>
+
+<input id="strain" placeholder="Bezeichnung">
+
+<label>Ort</label>
+
+<input id="location" placeholder="Wo warst du?">
+
+<label>Dampfentwicklung</label>
+
+<select id="vapor">
+
+<option value="">Keine Angabe</option>
+
+<option>Gering</option>
+
+<option>Mittel</option>
+
+<option>Stark</option>
+
+</select>
+
+<label>Geschmack</label>
+
+<select id="taste">
+
+<option value="">Keine Angabe</option>
+
+<option value="1">1 – Schwach</option>
+
+<option value="2">2</option>
+
+<option value="3">3</option>
+
+<option value="4">4</option>
+
+<option value="5">5 – Hervorragend</option>
+
+</select>
+
+<label>Weiteres / Bewertungen</label>
+
+<textarea id="notes" placeholder="Deine Eindrücke ..."></textarea>
+
+<button class="primary" type="submit">Eintrag speichern</button>
+
+<button class="secondary hidden" id="cancelEdit" type="button">Abbrechen</button>
+
+</form>
+
+<p class="muted">Deine Einträge werden lokal auf deinem Gerät gespeichert.</p>
+
+</div>
+
+</section>
+
+<!-- TAGEBUCH -->
+
+<section id="diary" class="view">
+
+<div class="panel">
+
+<h2>Mein Tagebuch</h2>
+
+<input id="search" placeholder="Einträge durchsuchen ...">
+
+<label>Gerätefilter</label>
+
+<select id="filterDevice">
+
+<option value="">Alle Geräte</option>
+
+</select>
+
+</div>
+
+<div id="entries"></div>
+
+<div class="panel">
+
+<h2>Datensicherung und CSV</h2>
+
+<p class="muted">Du kannst deine Tagebucheinträge als CSV-Datei exportieren oder eine vorhandene CSV-Datei einlesen.</p>
+
+<button class="secondary" id="export" type="button">CSV exportieren</button>
+
+<label for="csvFile">CSV-Datei zum Importieren auswählen</label>
+
+<input type="file" id="csvFile" accept=".csv,text/csv">
+
+<div id="csvPreview" class="hidden">
+
+<div class="notice" id="csvInfo"></div>
+
+<div class="preview-list" id="csvPreviewList"></div>
+
+<button class="primary" id="confirmImport" type="button">Angezeigte Einträge importieren</button>
+
+<button class="secondary" id="cancelImport" type="button">Import abbrechen</button>
+
+</div>
+
+<button class="secondary" id="deleteAll" type="button">Alle Einträge löschen</button>
+
+</div>
+
+</section>
+
+<!-- STATISTIK -->
+
+<section id="stats" class="view">
+
+<div class="panel">
+
+<h2>Meine Statistiken</h2>
+
+<div class="stats">
+
+<div class="stat"><strong id="total">0</strong><small>Sessions</small></div>
+
+<div class="stat"><strong id="deviceCount">0</strong><small>Geräte</small></div>
+
+<div class="stat"><strong id="totalPuffs">0</strong><small>Puffs</small></div>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<h3>Meistgenutzte Geräte</h3>
+
+<div id="deviceStats"></div>
+
+</div>
+
+<div class="panel">
+
+<h3>Durchschnittliche Dauer</h3>
+
+<strong id="avgDuration">–</strong>
+
+</div>
+
+</section>
+
+<!-- GERÄTE -->
+
+<section id="devices" class="view">
+
+<div class="panel">
+
+<h2>Meine Geräte</h2>
+
+<label>Gerätename</label>
+
+<input id="newDevice" placeholder="Neues Gerät">
+
+<label>Gerätekategorie</label>
+
+<select id="newCategory">
+
+<option value="vaporizer">Vaporizer</option>
+
+<option value="ecig">E-Zigarette</option>
+
+<option value="heater">Tabakerhitzer</option>
+
+</select>
+
+<button class="primary" id="addDevice" type="button">Gerät hinzufügen</button>
+
+<div id="deviceList"></div>
+
+</div>
+
+</section>
+
+<!-- ADVENTURE -->
+
+<section id="adventure" class="view">
+
+<div class="panel">
+
+<h2>🏆 Vaping Adventure</h2>
+
+<p class="muted">Sammle XP und Coins durch Dokumentation, Wissen und Gerätepflege.</p>
+
+<div class="stats">
+
+<div class="stat"><strong id="xp">0</strong><small>XP</small></div>
+
+<div class="stat"><strong id="coins">0</strong><small>Coins</small></div>
+
+<div class="stat"><strong id="level">1</strong><small>Level</small></div>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<h2>Questboard</h2>
+
+<div id="quests"></div>
+
+</div>
+
+</section>
+
+<!-- EDUCATION -->
+
+<section id="education" class="view">
+
+<div class="panel">
+
+<h2>🎓 Vaping Education</h2>
+
+<p>Wissen rund um Geräte, Technik, Akkusicherheit und verantwortungsvollen Umgang.</p>
+
+<div class="stats">
+
+<div class="stat"><strong id="passed">0</strong><small>Kurse</small></div>
+
+<div class="stat"><strong id="eduCoins">0</strong><small>Coins</small></div>
+
+<div class="stat"><strong id="best">–</strong><small>Bestleistung</small></div>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<h3>Grundkurs: Akkusicherheit</h3>
+
+<p class="muted">Fünf Prüfungsfragen. Zum Bestehen benötigst du mindestens 80 Prozent.</p>
+
+<p>Beschädigte Akkus dürfen nicht weiterverwendet werden. Lose Lithium-Ionen-Akkus müssen gegen Kurzschluss geschützt transportiert werden.</p>
+
+<button class="primary" id="startQuiz" type="button">Prüfung starten</button>
+
+<div id="quiz"></div>
+
+<div id="quizResult"></div>
+
+</div>
+
+</section>
+
+</main>
+
+<script>
+
+"use strict";
+
+/* =====================================================
+
+   DATENSPEICHERUNG
+
+===================================================== */
+
+function load(key, fallback) {
+
+  try {
+
+    const value = JSON.parse(localStorage.getItem(key));
+
+    return value ?? fallback;
+
+  } catch(e) {
+
+    return fallback;
+
+  }
+
+}
+
+function save(key, value) {
+
+  localStorage.setItem(key, JSON.stringify(value));
+
+}
+
+/* =====================================================
+
+   STANDARDGERÄTE UND KATEGORIEN
+
+===================================================== */
+
+const defaultDevices = [
+
+  {name:"Venty",category:"vaporizer"},
+
+  {name:"Mighty",category:"vaporizer"},
+
+  {name:"Volcano",category:"vaporizer"},
+
+  {name:"Dr. Dabber Switch2",category:"vaporizer"},
+
+  {name:"TerpTorch",category:"vaporizer"},
+
+  {name:"TerpHammer",category:"vaporizer"},
+
+  {name:"Dynavap M7",category:"vaporizer"},
+
+  {name:"Dynavap G3",category:"vaporizer"},
+
+  {name:"Dynavap B2",category:"vaporizer"},
+
+  {name:"Dynavap The B",category:"vaporizer"},
+
+  {name:"XMAX Qomo",category:"vaporizer"},
+
+  {name:"Pax Flow",category:"vaporizer"},
+
+  {name:"Cuboo Stick",category:"vaporizer"},
+
+  {name:"Smono",category:"vaporizer"},
+
+  {name:"GeekVape Legend 5",category:"ecig"},
+
+  {name:"ELFX Mega",category:"ecig"},
+
+  {name:"IQOS",category:"heater"},
+
+  {name:"glo",category:"heater"}
+
+];
+
+function inferCategory(name) {
+
+  const n = String(name || "").toLowerCase();
+
+  if (
+
+    n.includes("iqos") ||
+
+    n.includes("glo") ||
+
+    n.includes("terea") ||
+
+    n.includes("heets") ||
+
+    n.includes("neo ") ||
+
+    n === "neo" ||
+
+    n.includes("ploom")
+
+  ) return "heater";
+
+  if (
+
+    n.includes("geekvape") ||
+
+    n.includes("elfx") ||
+
+    n.includes("e-zig") ||
+
+    n.includes("ecig") ||
+
+    n.includes("e-cig")
+
+  ) return "ecig";
+
+  return "vaporizer";
+
+}
+
+function normalizeDevice(device) {
+
+  if (typeof device === "string") {
+
+    const name = device.trim();
+
+    return name ? {name, category:inferCategory(name)} : null;
+
+  }
+
+  if (device && typeof device === "object") {
+
+    const name = String(device.name || device.device || "").trim();
+
+    if (!name) return null;
+
+    const category = ["vaporizer","ecig","heater"].includes(device.category)
+
+      ? device.category
+
+      : inferCategory(name);
+
+    return {...device,name,category};
+
+  }
+
+  return null;
+
+}
+
+/* Bestehende Geräte einlesen und alte Speicherformate umwandeln */
+
+let storedDevices = load("pvd_devices", null);
+
+let devices;
+
+if (!Array.isArray(storedDevices) || storedDevices.length === 0) {
+
+  devices = defaultDevices.map(d => ({...d}));
+
+} else {
+
+  devices = storedDevices
+
+    .map(normalizeDevice)
+
+    .filter(Boolean);
+
+  /* Fehlende Standardgeräte ergänzen, eigene Geräte behalten */
+
+  defaultDevices.forEach(defaultDevice => {
+
+    const exists = devices.some(
+
+      d => d.name.toLowerCase() === defaultDevice.name.toLowerCase()
+
+    );
+
+    if (!exists) devices.push({...defaultDevice});
+
+  });
+
+}
+
+let entries = load("pvd_entries", []);
+
+let game = load("pvd_game", {
+
+  xp:0,
+
+  coins:0,
+
+  quests:[],
+
+  courses:{}
+
+});
+
+if (!Array.isArray(entries)) entries = [];
+
+if (!Array.isArray(game.quests)) game.quests = [];
+
+if (!game.courses || typeof game.courses !== "object") game.courses = {};
+
+/* Alte Einträge erhalten und Kategorien ergänzen */
+
+entries = entries.map(entry => {
+
+  const item = {...entry};
+
+  if (!item.category) {
+
+    const device = devices.find(
+
+      d => d.name.toLowerCase() === String(item.device || "").toLowerCase()
+
+    );
+
+    item.category = device ? device.category : inferCategory(item.device);
+
+  }
+
+  if (item.puffs === undefined || item.puffs === null) {
+
+    item.puffs = extractPuffs(item.notes || "");
+
+  }
+
+  return item;
+
+});
+
+/* Puffzahlen aus Notizen erkennen */
+
+function extractPuffs(text) {
+
+  const match = String(text || "").match(
+
+    /(?:anzahl\s*)?(?:züge|zuege|puffs?)\s*[:=]?\s*(\d+)/i
+
+  );
+
+  return match ? match[1] : "";
+
+}
+
+function persist() {
+
+  save("pvd_entries", entries);
+
+  save("pvd_devices", devices);
+
+  save("pvd_game", game);
+
+}
+
+/* Migrierte Daten direkt sichern */
+
+persist();
+
+const $ = id => document.getElementById(id);
+
+function escapeHTML(value) {
+
+  return String(value ?? "").replace(/[&<>"']/g,c=>({
+
+    "&":"&amp;",
+
+    "<":"&lt;",
+
+    ">":"&gt;",
+
+    '"':"&quot;",
+
+    "'":"&#39;"
+
+  })[c]);
+
+}
+
+/* =====================================================
+
+   NAVIGATION
+
+===================================================== */
+
+function showTab(tab) {
+
+  document.querySelectorAll(".view").forEach(section => {
+
+    section.classList.toggle("active",section.id === tab);
+
+  });
+
+  document.querySelectorAll("nav button").forEach(button => {
+
+    button.classList.toggle("active",button.dataset.tab === tab);
+
+  });
+
+  if (tab === "diary") renderEntries();
+
+  if (tab === "stats") renderStats();
+
+  if (tab === "devices") renderDevices();
+
+  if (tab === "adventure") renderAdventure();
+
+  if (tab === "education") renderEducation();
+
+  window.scrollTo(0,0);
+
+}
+
+document.querySelectorAll("nav button").forEach(button => {
+
+  button.addEventListener("click",() => showTab(button.dataset.tab));
+
+});
+
+/* =====================================================
+
+   DATUM UND UHRZEIT
+
+===================================================== */
+
+function setDateTime() {
+
+  const d = new Date();
+
+  $("date").value = [
+
+    d.getFullYear(),
+
+    String(d.getMonth()+1).padStart(2,"0"),
+
+    String(d.getDate()).padStart(2,"0")
+
+  ].join("-");
+
+  $("time").value =
+
+    String(d.getHours()).padStart(2,"0") + ":" +
+
+    String(d.getMinutes()).padStart(2,"0");
+
+}
+
+/* =====================================================
+
+   GERÄTEAUSWAHL
+
+===================================================== */
+
+function refreshDevices() {
+
+  const category = $("category").value;
+
+  const current = $("device").value;
+
+  const available = devices.filter(d => d.category === category);
+
+  $("device").innerHTML =
+
+    '<option value="">Gerät auswählen</option>' +
+
+    available.map(d =>
+
+      `<option value="${escapeHTML(d.name)}">${escapeHTML(d.name)}</option>`
+
+    ).join("");
+
+  if (available.some(d => d.name === current)) {
+
+    $("device").value = current;
+
+  }
+
+  const filter = $("filterDevice").value;
+
+  $("filterDevice").innerHTML =
+
+    '<option value="">Alle Geräte</option>' +
+
+    devices.map(d =>
+
+      `<option value="${escapeHTML(d.name)}">${escapeHTML(d.name)}</option>`
+
+    ).join("");
+
+  $("filterDevice").value = filter;
+
+}
+
+$("category").addEventListener("change",() => {
+
+  const cat = $("category").value;
+
+  $("strainLabel").textContent =
+
+    cat === "heater" ? "Stick-Sorte (NEO / TEREA usw.)" :
+
+    cat === "ecig" ? "Liquid / Aroma" :
+
+    "Sorte / Material";
+
+  refreshDevices();
+
+});
+
+/* =====================================================
+
+   GERÄTE VERWALTEN
+
+===================================================== */
+
+function renderDevices() {
+
+  refreshDevices();
+
+  $("deviceList").innerHTML = devices.map((d,i) => `
+
+    <div class="entry">
+
+      <b>${escapeHTML(d.name)}</b>
+
+      <small> · ${escapeHTML(d.category)}</small>
+
+      <button class="secondary" data-remove="${i}" type="button">Entfernen</button>
+
+    </div>
+
+  `).join("");
+
+}
+
+$("addDevice").addEventListener("click",() => {
+
+  const name = $("newDevice").value.trim();
+
+  const category = $("newCategory").value;
+
+  if (!name) return alert("Bitte Gerätenamen eingeben.");
+
+  if (devices.some(d => d.name.toLowerCase() === name.toLowerCase())) {
+
+    return alert("Dieses Gerät existiert bereits.");
+
+  }
+
+  devices.push({name,category});
+
+  $("newDevice").value = "";
+
+  persist();
+
+  renderDevices();
+
+});
+
+$("deviceList").addEventListener("click",e => {
+
+  const i = e.target.dataset.remove;
+
+  if (i === undefined) return;
+
+  const device = devices[Number(i)];
+
+  if (!device) return;
+
+  const name = device.name;
+
+  if (entries.some(x => x.device === name)) {
+
+    return alert("Das Gerät wird noch in Tagebucheinträgen verwendet.");
+
+  }
+
+  if (confirm("Gerät entfernen?")) {
+
+    devices.splice(Number(i),1);
+
+    persist();
+
+    renderDevices();
+
+  }
+
+});
+
+/* =====================================================
+
+   TAGEBUCHEINTRÄGE
+
+===================================================== */
+
+const fieldNames = [
+
+  "date","time","category","device","duration",
+
+  "puffs","strain","location","vapor","taste","notes"
+
+];
+
+function resetForm() {
+
+  $("entryForm").reset();
+
+  $("editId").value = "";
+
+  $("formHeading").textContent = "Neue Session";
+
+  $("cancelEdit").classList.add("hidden");
+
+  setDateTime();
+
+  $("category").value = "vaporizer";
+
+  $("strainLabel").textContent = "Sorte / Material";
+
+  refreshDevices();
+
+}
+
+$("entryForm").addEventListener("submit",e => {
+
+  e.preventDefault();
+
+  const data = {};
+
+  fieldNames.forEach(id => {
+
+    data[id] = $(id).value.trim();
+
+  });
+
+  if (!data.device) {
+
+    return alert("Bitte Gerät auswählen.");
+
+  }
+
+  const id = $("editId").value;
+
+  if (id) {
+
+    const index = entries.findIndex(x => x.id === id);
+
+    if (index >= 0) {
+
+      entries[index] = {...entries[index],...data};
+
+    }
+
+  } else {
+
+    entries.push({
+
+      id:String(Date.now()) + "-" + Math.random().toString(36).slice(2,7),
+
+      ...data,
+
+      created:new Date().toISOString()
+
+    });
+
+  }
+
+  persist();
+
+  resetForm();
+
+  showTab("diary");
+
+});
+
+$("cancelEdit").addEventListener("click",resetForm);
+
+function editEntry(id) {
+
+  const entry = entries.find(x => x.id === id);
+
+  if (!entry) return;
+
+  showTab("new");
+
+  $("editId").value = id;
+
+  if (entry.category) $("category").value = entry.category;
+
+  $("strainLabel").textContent =
+
+    entry.category === "heater" ? "Stick-Sorte (NEO / TEREA usw.)" :
+
+    entry.category === "ecig" ? "Liquid / Aroma" :
+
+    "Sorte / Material";
+
+  refreshDevices();
+
+  fieldNames.forEach(key => {
+
+    $(key).value = entry[key] ?? "";
+
+  });
+
+  $("formHeading").textContent = "Eintrag bearbeiten";
+
+  $("cancelEdit").classList.remove("hidden");
+
+  refreshDevices();
+
+  $("device").value = entry.device;
+
+}
+
+/* =====================================================
+
+   TAGEBUCH ANZEIGEN
+
+===================================================== */
+
+function renderEntries() {
+
+  let list = [...entries];
+
+  const search = $("search").value.toLowerCase();
+
+  const filter = $("filterDevice").value;
+
+  if (filter) {
+
+    list = list.filter(x => x.device === filter);
+
+  }
+
+  if (search) {
+
+    list = list.filter(x =>
+
+      fieldNames.some(key =>
+
+        String(x[key] ?? "").toLowerCase().includes(search)
+
+      )
+
+    );
+
+  }
+
+  list.sort((a,b) =>
+
+    (String(b.date) + String(b.time))
+
+      .localeCompare(String(a.date) + String(a.time))
+
+  );
+
+  $("entries").innerHTML = list.length ? list.map(x => `
+
+    <div class="entry">
+
+      <h3>${escapeHTML(x.device)}</h3>
+
+      <small>${escapeHTML(x.date)} · ${escapeHTML(x.time)} Uhr</small>
+
+      <div style="margin-top:8px">
+
+        <span class="tag">${escapeHTML(x.category)}</span>
+
+        ${x.duration ? `<span class="tag">${escapeHTML(x.duration)} Minuten</span>` : ""}
+
+        ${x.puffs ? `<span class="tag">${escapeHTML(x.puffs)} Puffs</span>` : ""}
+
+        ${x.strain ? `<span class="tag">${escapeHTML(x.strain)}</span>` : ""}
+
+        ${x.location ? `<span class="tag">${escapeHTML(x.location)}</span>` : ""}
+
+        ${x.vapor ? `<span class="tag">${escapeHTML(x.vapor)}</span>` : ""}
+
+        ${x.taste ? `<span class="tag">Geschmack ${escapeHTML(x.taste)}/5</span>` : ""}
+
+      </div>
+
+      ${x.notes ? `<p>${escapeHTML(x.notes)}</p>` : ""}
+
+      <div class="actions">
+
+        <button class="secondary" data-edit="${escapeHTML(x.id)}" type="button">Bearbeiten</button>
+
+        <button class="secondary" data-delete="${escapeHTML(x.id)}" type="button">Löschen</button>
+
+      </div>
+
+    </div>
+
+  `).join("") : '<div class="panel">Noch keine Einträge vorhanden.</div>';
+
+}
+
+$("entries").addEventListener("click",e => {
+
+  if (e.target.dataset.edit) {
+
+    editEntry(e.target.dataset.edit);
+
+  }
+
+  if (e.target.dataset.delete) {
+
+    const id = e.target.dataset.delete;
+
+    if (confirm("Eintrag wirklich löschen?")) {
+
+      entries = entries.filter(x => x.id !== id);
+
+      persist();
+
+      renderEntries();
+
+    }
+
+  }
+
+});
+
+$("search").addEventListener("input",renderEntries);
+
+$("filterDevice").addEventListener("change",renderEntries);
+
+$("deleteAll").addEventListener("click",() => {
+
+  if (confirm("Wirklich alle Einträge löschen?")) {
+
+    entries = [];
+
+    persist();
+
+    renderEntries();
+
+    renderStats();
+
+  }
+
+});
+
+/* =====================================================
+
+   CSV EXPORT
+
+===================================================== */
+
+const csvColumns = [
+
+  ["date","Datum"],
+
+  ["time","Uhrzeit"],
+
+  ["category","Kategorie"],
+
+  ["device","Gerät"],
+
+  ["duration","Dauer"],
+
+  ["puffs","Puffs"],
+
+  ["strain","Sorte"],
+
+  ["thc","THC"],
+
+  ["cbd","CBD"],
+
+  ["temp","Temperatur"],
+
+  ["amount","Menge"],
+
+  ["capsule","Kapsel"],
+
+  ["capsuleUse","Kapselnutzung"],
+
+  ["method","Methode"],
+
+  ["location","Ort"],
+
+  ["water","Wasser"],
+
+  ["vapor","Dampf"],
+
+  ["taste","Geschmack"],
+
+  ["notes","Notizen"]
+
+];
+
+function csvEscape(value) {
+
+  return '"' + String(value ?? "").replace(/"/g,'""') + '"';
+
+}
+
+function exportCSV() {
+
+  const rows = [
+
+    csvColumns.map(col => col[1]),
+
+    ...entries.map(entry =>
+
+      csvColumns.map(col => entry[col[0]] ?? "")
+
+    )
+
+  ];
+
+  const csv = rows.map(row =>
+
+    row.map(csvEscape).join(";")
+
+  ).join("\r\n");
+
+  const blob = new Blob(["\ufeff" + csv],{
+
+    type:"text/csv;charset=utf-8"
+
+  });
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+
+  a.href = url;
+
+  a.download = "Vaping-Adventure-Tagebuch.csv";
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  a.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url),1000);
+
+}
+
+$("export").addEventListener("click",exportCSV);
+
+/* =====================================================
+
+   CSV IMPORT
+
+===================================================== */
+
+let pendingCSVEntries = [];
+
+function parseCSV(text) {
+
+  text = text.replace(/^\uFEFF/,"");
+
+  const firstLine = text.split(/\r?\n/)[0] || "";
+
+  const semicolons = (firstLine.match(/;/g) || []).length;
+
+  const commas = (firstLine.match(/,/g) || []).length;
+
+  const delimiter = semicolons >= commas ? ";" : ",";
+
+  const rows = [];
+
+  let row = [];
+
+  let value = "";
+
+  let inQuotes = false;
+
+  for (let i=0; i<text.length; i++) {
+
+    const char = text[i];
+
+    const next = text[i+1];
+
+    if (char === '"' && inQuotes && next === '"') {
+
+      value += '"';
+
+      i++;
+
+    } else if (char === '"') {
+
+      inQuotes = !inQuotes;
+
+    } else if (char === delimiter && !inQuotes) {
+
+      row.push(value);
+
+      value = "";
+
+    } else if ((char === "\n" || char === "\r") && !inQuotes) {
+
+      if (char === "\r" && next === "\n") i++;
+
+      row.push(value);
+
+      value = "";
+
+      if (row.some(cell => cell.trim() !== "")) {
+
+        rows.push(row);
+
+      }
+
+      row = [];
+
+    } else {
+
+      value += char;
+
+    }
+
+  }
+
+  row.push(value);
+
+  if (row.some(cell => cell.trim() !== "")) {
+
+    rows.push(row);
+
+  }
+
+  return rows;
+
+}
+
+function normalizeHeader(header) {
+
+  return String(header || "")
+
+    .trim()
+
+    .toLowerCase()
+
+    .replace(/ä/g,"ae")
+
+    .replace(/ö/g,"oe")
+
+    .replace(/ü/g,"ue")
+
+    .replace(/ß/g,"ss")
+
+    .replace(/[^a-z0-9]/g,"");
+
+}
+
+function getCSVValue(record, aliases) {
+
+  for (const alias of aliases) {
+
+    const key = normalizeHeader(alias);
+
+    if (
+
+      Object.prototype.hasOwnProperty.call(record,key) &&
+
+      record[key] !== undefined
+
+    ) {
+
+      return String(record[key]).trim();
+
+    }
+
+  }
+
+  return "";
+
+}
+
+function normalizeDate(value) {
+
+  const v = String(value || "").trim();
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+
+  const german = v.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/);
+
+  if (german) {
+
+    return german[3] + "-" +
+
+      german[2].padStart(2,"0") + "-" +
+
+      german[1].padStart(2,"0");
+
+  }
+
+  return v;
+
+}
+
+function normalizeTime(value) {
+
+  const v = String(value || "").trim();
+
+  const match = v.match(/^(\d{1,2}):(\d{2})/);
+
+  if (match) {
+
+    return match[1].padStart(2,"0") + ":" + match[2];
+
+  }
+
+  return v;
+
+}
+
+function mapCSVRow(headers,row,index) {
+
+  const record = {};
+
+  headers.forEach((header,i) => {
+
+    record[normalizeHeader(header)] = row[i] ?? "";
+
+  });
+
+  const device = getCSVValue(record,[
+
+    "device","gerät","geraet","gerätename","geraetename"
+
+  ]);
+
+  if (!device) return null;
+
+  let category = getCSVValue(record,[
+
+    "category","kategorie","geraetekategorie","geräteklasse","geraeteklasse"
+
+  ]);
+
+  category = normalizeHeader(category);
+
+  if (["vaporizer","vaporizers"].includes(category)) {
+
+    category = "vaporizer";
+
+  } else if (
+
+    ["ecig","ezigarette","e-zigarette","elektronischezigarette"].includes(category)
+
+  ) {
+
+    category = "ecig";
+
+  } else if (
+
+    ["heater","tabakerhitzer","iqos","glo"].includes(category)
+
+  ) {
+
+    category = "heater";
+
+  } else {
+
+    category = inferCategory(device);
+
+  }
+
+  let notes = getCSVValue(record,[
+
+    "notes","notizen","weiteres","bewertungen","bemerkungen"
+
+  ]);
+
+  let puffs = getCSVValue(record,[
+
+    "puffs","züge","zuege","anzahlzüge","anzahlzuege","anzahlpuffs"
+
+  ]);
+
+  if (!puffs) puffs = extractPuffs(notes);
+
+  const entry = {
+
+    id:"import-" + Date.now() + "-" + index + "-" +
+
+      Math.random().toString(36).slice(2,7),
+
+    date:normalizeDate(getCSVValue(record,["date","datum"])),
+
+    time:normalizeTime(getCSVValue(record,["time","uhrzeit","zeit"])),
+
+    category,
+
+    device,
+
+    duration:getCSVValue(record,["duration","dauer","dauerinminuten"]),
+
+    puffs,
+
+    strain:getCSVValue(record,["strain","sorte","material","liquid","aroma"]),
+
+    thc:getCSVValue(record,["thc"]),
+
+    cbd:getCSVValue(record,["cbd"]),
+
+    temp:getCSVValue(record,["temp","temperature","temperatur"]),
+
+    amount:getCSVValue(record,["amount","menge"]),
+
+    capsule:getCSVValue(record,["capsule","kapsel"]),
+
+    capsuleUse:getCSVValue(record,["capsuleuse","kapselnutzung"]),
+
+    method:getCSVValue(record,["method","methode"]),
+
+    location:getCSVValue(record,["location","ort"]),
+
+    water:getCSVValue(record,["water","wasser","wasserfilter"]),
+
+    vapor:getCSVValue(record,["vapor","dampf","dampfentwicklung"]),
+
+    taste:getCSVValue(record,["taste","geschmack"]),
+
+    notes
+
+  };
+
+  if (!entry.date && !entry.time && !entry.notes && !entry.strain) {
+
+    return null;
+
+  }
+
+  return entry;
+
+}
+
+function isDuplicate(candidate) {
+
+  return entries.some(existing => {
+
+    const sameDate = String(existing.date || "") === String(candidate.date || "");
+
+    const sameTime = String(existing.time || "") === String(candidate.time || "");
+
+    const sameDevice =
+
+      String(existing.device || "").toLowerCase() ===
+
+      String(candidate.device || "").toLowerCase();
+
+    if (sameDate && sameTime && sameDevice) {
+
+      return true;
+
+    }
+
+    return false;
+
+  });
+
+}
+
+function renderCSVPreview() {
+
+  const newEntries = pendingCSVEntries.filter(x => !isDuplicate(x));
+
+  const duplicates = pendingCSVEntries.length - newEntries.length;
+
+  $("csvPreview").classList.remove("hidden");
+
+  $("csvInfo").textContent =
+
+    pendingCSVEntries.length + " Einträge erkannt. " +
+
+    newEntries.length + " neue Einträge können importiert werden. " +
+
+    duplicates + " mögliche Duplikate werden übersprungen.";
+
+  $("csvPreviewList").innerHTML = pendingCSVEntries.slice(0,100).map(entry => {
+
+    const duplicate = isDuplicate(entry);
+
+    return `
+
+      <div class="preview-item">
+
+        <b>${escapeHTML(entry.device)}</b>
+
+        ${duplicate ? '<span class="tag">Duplikat</span>' : '<span class="tag">Neu</span>'}
+
+        <br>
+
+        ${escapeHTML(entry.date)} · ${escapeHTML(entry.time)}
+
+        ${entry.strain ? " · " + escapeHTML(entry.strain) : ""}
+
+        ${entry.puffs ? " · " + escapeHTML(entry.puffs) + " Puffs" : ""}
+
+      </div>
+
+    `;
+
+  }).join("");
+
+  if (pendingCSVEntries.length > 100) {
+
+    $("csvPreviewList").innerHTML +=
+
+      `<p class="muted">Es werden die ersten 100 Einträge in der Vorschau angezeigt.</p>`;
+
+  }
+
+  $("confirmImport").disabled = newEntries.length === 0;
+
+}
+
+$("csvFile").addEventListener("change",async e => {
+
+  const file = e.target.files[0];
+
+  pendingCSVEntries = [];
+
+  $("csvPreview").classList.add("hidden");
+
+  if (!file) return;
+
+  try {
+
+    const text = await file.text();
+
+    const rows = parseCSV(text);
+
+    if (rows.length < 2) {
+
+      return alert("Die CSV-Datei enthält keine importierbaren Daten.");
+
+    }
+
+    const headers = rows[0];
+
+    pendingCSVEntries = rows.slice(1)
+
+      .map((row,index) => mapCSVRow(headers,row,index))
+
+      .filter(Boolean);
+
+    if (!pendingCSVEntries.length) {
+
+      return alert("Es wurden keine passenden Tagebucheinträge gefunden. Bitte prüfe die CSV-Spalten.");
+
+    }
+
+    renderCSVPreview();
+
+  } catch(error) {
+
+    alert("Die CSV-Datei konnte nicht gelesen werden.");
+
+    console.error(error);
+
+  }
+
+});
+
+$("confirmImport").addEventListener("click",() => {
+
+  const toImport = pendingCSVEntries.filter(x => !isDuplicate(x));
+
+  if (!toImport.length) {
+
+    return alert("Es gibt keine neuen Einträge zum Importieren.");
+
+  }
+
+  if (!confirm(toImport.length + " Einträge jetzt importieren?")) return;
+
+  /* Importierte Geräte ergänzen, vorhandene Geräte nicht überschreiben */
+
+  toImport.forEach(entry => {
+
+    const exists = devices.some(
+
+      d => d.name.toLowerCase() === entry.device.toLowerCase()
+
+    );
+
+    if (!exists) {
+
+      devices.push({
+
+        name:entry.device,
+
+        category:entry.category
+
+      });
+
+    }
+
+    entries.push(entry);
+
+  });
+
+  persist();
+
+  const count = toImport.length;
+
+  pendingCSVEntries = [];
+
+  $("csvFile").value = "";
+
+  $("csvPreview").classList.add("hidden");
+
+  renderEntries();
+
+  renderStats();
+
+  alert(count + " Einträge wurden importiert.");
+
+});
+
+$("cancelImport").addEventListener("click",() => {
+
+  pendingCSVEntries = [];
+
+  $("csvFile").value = "";
+
+  $("csvPreview").classList.add("hidden");
+
+});
+
+/* =====================================================
+
+   STATISTIK
+
+===================================================== */
+
+function renderStats() {
+
+  $("total").textContent = entries.length;
+
+  $("deviceCount").textContent =
+
+    new Set(entries.map(x => x.device).filter(Boolean)).size;
+
+  const puffs = entries.reduce(
+
+    (sum,x) => sum + (Number(x.puffs) || 0),0
+
+  );
+
+  $("totalPuffs").textContent = puffs;
+
+  const durations = entries
+
+    .map(x => Number(x.duration))
+
+    .filter(x => x > 0);
+
+  $("avgDuration").textContent = durations.length
+
+    ? Math.round(durations.reduce((a,b) => a+b,0) / durations.length) + " Min."
+
+    : "–";
+
+  const counts = {};
+
+  entries.forEach(x => {
+
+    if (x.device) counts[x.device] = (counts[x.device] || 0) + 1;
+
+  });
+
+  $("deviceStats").innerHTML = Object.entries(counts)
+
+    .sort((a,b) => b[1]-a[1])
+
+    .map(([name,count]) =>
+
+      `<p>${escapeHTML(name)} <b>${count}</b></p>`
+
+    ).join("") || "Noch keine Daten.";
+
+}
+
+/* =====================================================
+
+   ADVENTURE / QUESTS
+
+===================================================== */
+
+const questData = [
+
+  {
+
+    id:"five",
+
+    name:"Chronist",
+
+    description:"Fünf Tagebucheinträge erstellen",
+
+    xp:25,
+
+    coins:10,
+
+    check:() => entries.length >= 5
+
+  },
+
+  {
+
+    id:"three",
+
+    name:"Geräte-Kenner",
+
+    description:"Drei verschiedene Geräte dokumentieren",
+
+    xp:30,
+
+    coins:15,
+
+    check:() => new Set(entries.map(x => x.device)).size >= 3
+
+  },
+
+  {
+
+    id:"ten",
+
+    name:"Abenteurer",
+
+    description:"Zehn Tagebucheinträge erstellen",
+
+    xp:50,
+
+    coins:25,
+
+    check:() => entries.length >= 10
+
+  }
+
+];
+
+function renderAdventure() {
+
+  $("xp").textContent = game.xp;
+
+  $("coins").textContent = game.coins;
+
+  $("level").textContent = Math.floor(game.xp / 100) + 1;
+
+  $("quests").innerHTML = questData.map(q => {
+
+    const done = game.quests.includes(q.id);
+
+    const ready = q.check();
+
+    return `
+
+      <div class="entry">
+
+        <h3>${escapeHTML(q.name)}</h3>
+
+        <p>${escapeHTML(q.description)}</p>
+
+        <small>+${q.xp} XP · +${q.coins} Coins</small>
+
+        <button class="primary" data-quest="${q.id}" type="button"
+
+          ${done || !ready ? "disabled" : ""}>
+
+          ${done ? "Erledigt ✓" : ready ? "Belohnung abholen" : "Noch nicht erreicht"}
+
+        </button>
+
+      </div>
+
+    `;
+
+  }).join("");
+
+}
+
+$("quests").addEventListener("click",e => {
+
+  const id = e.target.dataset.quest;
+
+  const q = questData.find(x => x.id === id);
+
+  if (!q || game.quests.includes(id) || !q.check()) return;
+
+  game.quests.push(id);
+
+  game.xp += q.xp;
+
+  game.coins += q.coins;
+
+  persist();
+
+  renderAdventure();
+
+});
+
+/* =====================================================
+
+   EDUCATION
+
+===================================================== */
+
+const questions = [
+
+  {
+
+    q:"Was machst du mit einem beschädigten Akku?",
+
+    a:["Weiterverwenden","Nicht weiterverwenden","Mit Klebeband reparieren"],
+
+    correct:1
+
+  },
+
+  {
+
+    q:"Wie transportierst du lose Akkus?",
+
+    a:["Ungeschützt","Mit Schlüsseln zusammen","In einer geeigneten Schutzhülle"],
+
+    correct:2
+
+  },
+
+  {
+
+    q:"Welches Ladegerät solltest du verwenden?",
+
+    a:["Ein geeignetes Ladegerät nach Herstellerangaben","Irgendein Netzteil","Ein beschädigtes Kabel"],
+
+    correct:0
+
+  },
+
+  {
+
+    q:"Was ist bei ungewöhnlicher Akkuhitze wichtig?",
+
+    a:["Ignorieren","Gerät nicht weiterverwenden und Sicherheitsmaßnahmen beachten","Weiterladen"],
+
+    correct:1
+
+  },
+
+  {
+
+    q:"Wie lagerst du Akkus?",
+
+    a:["Trocken und geschützt nach Herstellerangaben","In direkter Sonne","Lose mit Metallteilen"],
+
+    correct:0
+
+  }
+
+];
+
+function renderEducation() {
+
+  const course = game.courses.battery;
+
+  $("passed").textContent = course && course.passed ? 1 : 0;
+
+  $("eduCoins").textContent = course ? course.coins || 0 : 0;
+
+  $("best").textContent = course ? course.score + " %" : "–";
+
+}
+
+function startQuiz() {
+
+  $("quizResult").innerHTML = "";
+
+  $("quiz").innerHTML = questions.map((q,i) => `
+
+    <div class="entry">
+
+      <b>${i+1}. ${escapeHTML(q.q)}</b>
+
+      ${q.a.map((answer,j) => `
+
+        <label style="display:flex;gap:8px;align-items:center;color:white;font-weight:normal">
+
+          <input style="width:auto" type="radio" name="question${i}" value="${j}">
+
+          ${escapeHTML(answer)}
+
+        </label>
+
+      `).join("")}
+
+    </div>
+
+  `).join("") +
+
+  '<button class="primary" id="submitQuiz" type="button">Prüfung abgeben</button>';
+
+  $("submitQuiz").addEventListener("click",() => {
+
+    let score = 0;
+
+    for (let i=0; i<questions.length; i++) {
+
+      const answer = document.querySelector(
+
+        `input[name="question${i}"]:checked`
+
+      );
+
+      if (!answer) return alert("Bitte alle Fragen beantworten.");
+
+      if (Number(answer.value) === questions[i].correct) score++;
+
+    }
+
+    const percent = Math.round(score / questions.length * 100);
+
+    const passed = percent >= 80;
+
+    const old = game.courses.battery;
+
+    if (passed && (!old || !old.passed)) {
+
+      game.coins += 25;
+
+      game.xp += 30;
+
+      game.courses.battery = {
+
+        passed:true,
+
+        score:percent,
+
+        coins:25
+
+      };
+
+    } else if (!old || percent > old.score) {
+
+      game.courses.battery = {
+
+        ...old,
+
+        score:percent
+
+      };
+
+    }
+
+    persist();
+
+    $("quizResult").innerHTML = `
+
+      <div class="entry">
+
+        <h3>${passed ? "Bestanden! 🎉" : "Noch nicht bestanden"}</h3>
+
+        Ergebnis: ${score}/5 – ${percent}%
+
+      </div>
+
+    `;
+
+    renderEducation();
+
+    renderAdventure();
+
+  });
+
+}
+
+$("startQuiz").addEventListener("click",startQuiz);
+
+/* =====================================================
+
+   INITIALISIERUNG
+
+===================================================== */
