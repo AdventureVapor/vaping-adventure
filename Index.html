@@ -65,33 +65,119 @@ class="site-logo">
 </nav>
 <main>
 <section id="new" class="view active">
- <form id="entryForm" class="panel">
-  <h2 id="formTitle">Neue Session dokumentieren</h2>
-  <p class="sub">Datum und Uhrzeit werden automatisch vorbelegt und können geändert werden.</p>
-  <input type="hidden" id="editId">
-  <div class="grid">
-   <div><label for="date">Datum</label><input id="date" type="date" required></div>
-   <div><label for="time">Uhrzeit</label><input id="time" type="time" required></div>
-   <div class="full"><label for="device">Gerät</label><select id="device" required></select></div>
-   <div><label for="duration">Dauer (Minuten)</label><input id="duration" type="number" min="0" step="1" placeholder="z. B. 8"></div>
-   <div><label for="puffs">Züge / Puffs (Anzahl, optional)</label><input id="puffs" type="number" min="0" step="1" inputmode="numeric" placeholder="z. B. 12"></div>
-   <div><label for="method">Füll-/Materialart</label><select id="method"><option>Dosierkapsel</option><option>Kräuterkammer</option><option>Ballvape / Injector</option><option>Konzentrateinsatz</option><option>Sonstiges</option></select></div>
-   <div class="full"><label for="strain">Sorte / Material</label><input id="strain" placeholder="Bezeichnung der Sorte"></div>
-   <div><label for="thc">THC-Gehalt (%)</label><input id="thc" type="number" min="0" max="100" step=".1" placeholder="optional"></div>
-   <div><label for="cbd">CBD-Gehalt (%)</label><input id="cbd" type="number" min="0" max="100" step=".1" placeholder="optional"></div>
-   <div><label for="temp">Temperatur (°C)</label><input id="temp" type="number" min="0" max="1000" step="1" placeholder="z. B. 180"></div>
-   <div><label for="amount">Füllmenge (g)</label><input id="amount" type="number" min="0" step=".001" placeholder="z. B. 0,1"></div>
-   <div class="full" id="capsuleFields">
-    <label for="capsule">Dosierkapsel – ID / Nummer</label><input id="capsule" placeholder="z. B. Kapsel 04">
-    <label for="capsuleUse" style="margin-top:10px">Wie oft wurde diese Füllung bereits verwendet?</label>
-    <select id="capsuleUse"><option value="">Bitte auswählen</option><option value="1">★ 1. Durchgang</option><option value="2">★★ 2. Durchgang</option><option value="3">★★★ 3. Durchgang</option><option value="4">4. Durchgang</option><option value="5">5. Durchgang</option><option value="6">6. Durchgang oder öfter</option></select>
-    <p class="hint">Die Sterne kennzeichnen den Durchgang derselben befüllten Kapsel – nicht die Bewertung der Session.</p>
-   </div>
-   <div><label for="location">Ort</label><input id="location" placeholder="z. B. Zuhause"></div>
-   <div><label for="water">Wasserfilter / Blubber</label><select id="water"><option value="">Keine Angabe</option><option>Ja</option><option>Nein</option></select></div>
-   <div><label for="vapor">Dampfentwicklung</label><select id="vapor"><option value="">Keine Angabe</option><option>Gering</option><option>Mittel</option><option>Stark</option></select></div>
-   <div><label for="taste">Geschmack (1–5)</label><select id="taste"><option value="">Keine Angabe</option><option>1 – schwach</option><option>2</option><option>3</option><option>4</option><option>5 – hervorragend</option></select></div>
-   <div class="full"><label for="notes">Weiteres / Bemerkungen</label><textarea id="notes" placeholder="Zugverhalten, Geschmack, Eindrücke, Besonderheiten ..."></textarea></div>
+ 
+<div><label for="date">Datum</label><input id="date" type="date" required></div>
+<div><label for="time">Uhrzeit</label><input id="time" type="time" required></div>
+
+<div class="full">
+  <label for="category">Gerätekategorie</label>
+  <select id="category" required>
+    <option value="vaporizer">Vaporizer</option>
+    <option value="ecig">E-Zigarette</option>
+    <option value="heater">Tabakerhitzer</option>
+  </select>
+</div>
+
+<div class="full">
+  <label for="device">Gerät</label>
+  <select id="device" required></select>
+</div>
+
+<div><label for="duration">Dauer (Minuten)</label>
+<input id="duration" type="number" min="0" placeholder="z. B. 8"></div>
+
+<div><label for="puffs">Züge / Puffs</label>
+<input id="puffs" type="number" min="0" placeholder="optional"></div>
+
+<div id="methodField">
+  <label for="method">Füllmaterial / Verdampfer / Tank</label>
+  <select id="method">
+    <option>Dosierkapsel</option>
+    <option>Kräuterkammer</option>
+    <option>Ballvape / Injector</option>
+    <option>Konzentrateinsatz</option>
+    <option>Sonstiges</option>
+  </select>
+</div>
+
+<div class="full">
+  <label for="strain" id="strainLabel">Sorte / Material</label>
+  <input id="strain" placeholder="Bezeichnung">
+</div>
+
+<div id="thcField">
+  <label for="thc" id="thcLabel">THC-Gehalt (%)</label>
+  <input id="thc" type="number" min="0" step=".1">
+</div>
+
+<div id="cbdField">
+  <label for="cbd" id="cbdLabel">CBD-Gehalt (%)</label>
+  <input id="cbd" type="number" min="0" step=".1">
+</div>
+
+<div id="pgField" class="hidden">
+  <label for="pg">PG (%)</label>
+  <input id="pg" type="number" min="0" max="100" step=".1">
+</div>
+
+<div id="tempField">
+  <label for="temp" id="tempLabel">Temperatur (°C)</label>
+  <input id="temp" type="number" min="0" step="1">
+</div>
+
+<div id="amountField">
+  <label for="amount">Füllmenge (g)</label>
+  <input id="amount" type="number" min="0" step=".001">
+</div>
+
+<div class="full" id="capsuleFields">
+  <label for="capsule">Dosierkapsel – ID / Nummer</label>
+  <input id="capsule" placeholder="z. B. Kapsel 04">
+  <label for="capsuleUse">Verwendung der Füllung</label>
+  <select id="capsuleUse">
+    <option value="">Bitte auswählen</option>
+    <option value="1">1. Durchgang</option>
+    <option value="2">2. Durchgang</option>
+    <option value="3">3. Durchgang</option>
+    <option value="4">4. Durchgang</option>
+    <option value="5">5. Durchgang</option>
+    <option value="6">6. Durchgang oder öfter</option>
+  </select>
+</div>
+
+<div><label for="location">Ort</label>
+<input id="location" placeholder="z. B. Zuhause"></div>
+
+<div id="waterField">
+  <label for="water">Wasserfilter / Blubber</label>
+  <select id="water">
+    <option value="">Keine Angabe</option>
+    <option>Ja</option>
+    <option>Nein</option>
+  </select>
+</div>
+
+<div><label for="vapor">Dampfentwicklung</label>
+<select id="vapor">
+  <option value="">Keine Angabe</option>
+  <option>Gering</option>
+  <option>Mittel</option>
+  <option>Stark</option>
+</select></div>
+
+<div><label for="taste">Geschmack (1–5)</label>
+<select id="taste">
+  <option value="">Keine Angabe</option>
+  <option>1 – schwach</option>
+  <option>2</option>
+  <option>3</option>
+  <option>4</option>
+  <option>5 – hervorragend</option>
+</select></div>
+
+<div class="full">
+  <label for="notes">Weiteres / Bemerkungen</label>
+  <textarea id="notes" placeholder="Eindrücke und Besonderheiten ..."></textarea>
   </div>
   <button class="primary" type="submit">Eintrag speichern</button>
   <button class="secondary hidden" id="cancelEdit" type="button" style="width:100%;margin-top:8px">Bearbeitung abbrechen</button>
@@ -156,28 +242,160 @@ class="site-logo">
 </section>
 </main>
 <script>
-const defaultDevices=["Storz & Bickel Venty","Storz & Bickel Mighty","Storz & Bickel Volcano","Dr. Dabber Switch²","TerpTorch","TerpHammer","Dynavap M7","Dynavap G3","Dynavap B2","Dynavap The B","XMAX Qomo","Pax Flow","Cuboo Stick","Crossing Technology Flower Heater Gen 2","Smono"];
+
+const defaultDevices=[
+ "Storz & Bickel Venty",
+ "Storz & Bickel Mighty",
+ "Storz & Bickel Volcano",
+ "Dr. Dabber Switch²",
+ "TerpTorch",
+ "TerpHammer",
+ "Dynavap M7",
+ "Dynavap G3",
+ "Dynavap B2",
+ "Dynavap The B",
+ "XMAX Qomo",
+ "Pax Flow",
+ "Cuboo Stick",
+ "Crossing Technology Flower Heater Gen 2",
+ "Smono",
+ "GeekVape Legend 5",
+ "ELFX Mega",
+ "IQOS",
+ "glo",
+ "Ploom"
+];
+
 const $=id=>document.getElementById(id);
-const read=(key, fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
-let devices=read("pvd_devices",defaultDevices), entries=read("pvd_entries",[]);
-const fields=["date","time","device","duration","puffs","method","strain","thc","cbd","temp","amount","capsule","capsuleUse","location","water","vapor","taste","notes"];
-function persist(){localStorage.setItem("pvd_devices",JSON.stringify(devices));localStorage.setItem("pvd_entries",JSON.stringify(entries))}
-function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
-function nowTime(){const d=new Date();return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`}
-function refreshDevices(){
- if(!Array.isArray(devices) || devices.length===0){devices=[...defaultDevices];persist()}
- const current=$("device").value;
- $("device").innerHTML='<option value="">Gerät auswählen …</option>'+devices.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join("");
- if(devices.includes(current))$("device").value=current; else $("device").value="";
- $("filterDevice").innerHTML='<option value="">Alle Geräte</option>'+devices.map(d=>`<option>${esc(d)}</option>`).join("");
- $("deviceList").innerHTML=devices.map((d,i)=>`<div class="entry" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span>${esc(d)}</span><button class="secondary danger" data-remove="${i}">Entfernen</button></div>`).join("");
+const read=(key,fallback)=>{
+ try{return JSON.parse(localStorage.getItem(key))??fallback}
+ catch{return fallback}
+};
+
+let devices=read("pvd_devices",defaultDevices);
+let entries=read("pvd_entries",[]);
+
+const fields=[
+ "date","time","category","device","duration","puffs",
+ "method","strain","thc","cbd","pg","temp","amount",
+ "capsule","capsuleUse","location","water","vapor",
+ "taste","notes"
+];
+
+function persist(){
+ localStorage.setItem("pvd_devices",JSON.stringify(devices));
+ localStorage.setItem("pvd_entries",JSON.stringify(entries));
 }
-function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function toggleCapsule(){$("capsuleFields").classList.toggle("hidden",$("method").value!=="Dosierkapsel")}
-function resetForm(){ $("entryForm").reset();$("editId").value="";$("formTitle").textContent="Neue Session dokumentieren";$("cancelEdit").classList.add("hidden");$("date").value=today();$("time").value=nowTime();refreshDevices();toggleCapsule()}
-function showTab(tab){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===tab));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));if(tab==="diary")renderEntries();if(tab==="stats")renderStats();if(tab==="settings")refreshDevices();if(tab==="adventure")renderAdventure();if(tab==="education")renderEducation()}
+
+function today(){
+ const d=new Date();
+ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+function nowTime(){
+ const d=new Date();
+ return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+}
+
+function getDeviceCategory(name){
+ const n=name.toLowerCase();
+
+ if(/iqos|glo|ploom|neo|terea|heets/.test(n)) return "heater";
+ if(/geekvape|elfx|vape|e-zig|legend 5/.test(n)) return "ecig";
+
+ return "vaporizer";
+}
+
+function refreshDevices(){
+ if(!Array.isArray(devices)) devices=[...defaultDevices];
+
+ const category=$("category").value;
+ const current=$("device").value;
+
+ const filtered=devices.filter(d=>getDeviceCategory(d)===category);
+
+ $("device").innerHTML=
+ '<option value="">Gerät auswählen …</option>'+
+ filtered.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join("");
+
+ if(filtered.includes(current)) $("device").value=current;
+
+ $("filterDevice").innerHTML=
+ '<option value="">Alle Geräte</option>'+
+ devices.map(d=>`<option>${esc(d)}</option>`).join("");
+
+ $("deviceList").innerHTML=devices.map((d,i)=>
+ `<div class="entry" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+ <span>${esc(d)} <small>(${getDeviceCategory(d)})</small></span>
+ <button class="secondary danger" data-remove="${i}">Entfernen</button>
+ </div>`).join("");
+}
+
+function esc(s){
+ return String(s??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function toggleCapsule(){
+ $("capsuleFields").classList.toggle("hidden",
+ $("method").value!=="Dosierkapsel");
+}
+
+function updateCategoryFields(){
+ const c=$("category").value;
+
+ const show=(id,visible)=>{
+  $(id).classList.toggle("hidden",!visible);
+ };
+
+ show("methodField",c==="vaporizer"||c==="ecig");
+ show("thcField",c==="vaporizer"||c==="ecig");
+ show("cbdField",c==="vaporizer"||c==="ecig");
+ show("pgField",c==="ecig");
+ show("tempField",c==="vaporizer"||c==="ecig");
+ show("amountField",c==="vaporizer");
+ show("capsuleFields",c==="vaporizer"&&$("method").value==="Dosierkapsel");
+ show("waterField",c==="vaporizer");
+
+ $("methodField").querySelector("label").textContent=
+ c==="ecig"?"Verdampfer / Tank":"Füllmaterial / Materialart";
+
+ $("strainLabel").textContent=
+ c==="ecig"?"Liquidsorte / Aroma":
+ c==="heater"?"Stick-Sorte":"Sorte / Material";
+
+ $("thcLabel").textContent=
+ c==="ecig"?"Nikotingehalt (mg/ml)":"THC-Gehalt (%)";
+
+ $("cbdLabel").textContent=
+ c==="ecig"?"VG (%)":"CBD-Gehalt (%)";
+
+ $("tempLabel").textContent=
+ c==="ecig"?"Wattzahl (W)":"Temperatur (°C)";
+
+ refreshDevices();
+}
+
+function resetForm(){
+ $("entryForm").reset();
+ $("editId").value="";
+ $("formTitle").textContent="Neue Session dokumentieren";
+ $("cancelEdit").classList.add("hidden");
+ $("date").value=today();
+ $("time").value=nowTime();
+ $("category").value="vaporizer";
+ updateCategoryFields();
+ toggleCapsule();
+}
+udocument.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===tab));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));if(tab==="diary")renderEntries();if(tab==="stats")renderStats();if(tab==="settings")refreshDevices();if(tab==="adventure")renderAdventure();if(tab==="education")renderEducation()}
 document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
-$("method").addEventListener("change",toggleCapsule);
+$("method").addEventListener("change",()=>{
+ toggleCapsule();
+ updateCategoryFields();
+});
+
+$("category").addEventListener("change",updateCategoryFields);
 $("entryForm").addEventListener("submit",e=>{
  e.preventDefault();const data={};fields.forEach(f=>data[f]=$(f).value.trim());
  if(data.method!=="Dosierkapsel"){data.capsule="";data.capsuleUse=""}
