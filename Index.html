@@ -1,464 +1,812 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#183d2d">
-<title>my vaping diary</title>
+<title>Vaping Adventure Alpha 1.2</title>
+
 <style>
-:root{--bg:#101a15;--panel:#192820;--panel2:#21372b;--line:#345342;--text:#eef5ef;--muted:#a9bbae;--green:#75bd8b;--green2:#b3e0bd;--danger:#ef9b91;--gold:#f2c96d;--shadow:0 12px 35px #0005}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#234633 0,#101a15 52%);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
-header{padding:26px 18px 18px;max-width:900px;margin:auto} .eyebrow{color:var(--green2);text-transform:uppercase;letter-spacing:.14em;font-size:11px;font-weight:800}
-h1{font-size:clamp(27px,7vw,39px);line-height:1.08;margin:7px 0 6px;letter-spacing:-.04em}header p{color:var(--muted);margin:0}
-nav{display:flex;gap:8px;padding:0 16px 14px;max-width:900px;margin:auto;overflow:auto}
-nav button{white-space:nowrap;background:#1b2b21;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:10px 15px;font-weight:700}
-nav button.active{background:var(--green);color:#102318;border-color:var(--green)}
-main{max-width:900px;margin:auto;padding:0 16px 40px}.view{display:none}.view.active{display:block}
-.panel{background:linear-gradient(145deg,#1c2d23,#17241c);border:1px solid var(--line);border-radius:20px;padding:17px;margin-bottom:14px;box-shadow:var(--shadow)}
-.panel h2{font-size:18px;margin:0 0 14px}.sub{font-size:12px;color:var(--muted);margin-top:-8px;margin-bottom:14px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}
-label{display:block;font-size:12px;color:var(--green2);font-weight:750;margin:0 0 6px}
-input,select,textarea{width:100%;background:#0f1b14;color:var(--text);border:1px solid #3a5945;border-radius:11px;padding:12px;font:inherit;min-width:0}
-textarea{min-height:78px;resize:vertical}input:focus,select:focus,textarea:focus{outline:2px solid var(--green);border-color:transparent}
-button,.btn{cursor:pointer;font:inherit}.primary{width:100%;border:0;border-radius:13px;padding:14px;background:var(--green);color:#102318;font-weight:850;margin-top:14px}.secondary{border:1px solid var(--line);background:#22372a;color:var(--text);border-radius:10px;padding:10px 13px;font-weight:700}.danger{color:var(--danger);border-color:#75433e;background:#30201e}
-.hint{color:var(--muted);font-size:12px}.checkrow{display:flex;gap:9px;align-items:center;color:var(--muted);font-size:13px}.checkrow input{width:auto;accent-color:var(--green)}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px}.stat{background:#1c2d23;border:1px solid var(--line);border-radius:15px;padding:13px}.stat b{display:block;font-size:24px;color:var(--green2)}.stat span{font-size:11px;color:var(--muted)}
-.entry{border:1px solid var(--line);background:#1a2a20;border-radius:15px;padding:14px;margin:10px 0}.entrytop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.entry h3{margin:0;font-size:16px}.meta{color:var(--muted);font-size:12px;margin:3px 0 10px}.tags{display:flex;flex-wrap:wrap;gap:6px}.tag{background:#294333;border-radius:99px;padding:4px 8px;font-size:11px;color:#d5ebda}.entry p{margin:9px 0 0;color:#c4d4c8;font-size:13px;white-space:pre-wrap}
-.actions{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}.actions button{font-size:12px}
-.empty{text-align:center;color:var(--muted);padding:28px 12px}.hidden{display:none!important}
-@media(max-width:560px){.grid{grid-template-columns:1fr 1fr}.cards{gap:7px}.stat{padding:10px}.stat b{font-size:21px}.panel{padding:14px}.grid .full{grid-column:1/-1}}
-@media(max-width:380px){.grid{grid-template-columns:1fr}}
-
-.header-brand {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+:root {
+  --bg:#101a15;
+  --panel:#1c2d23;
+  --green:#75bd8b;
+  --light:#b3e0bd;
+  --text:#eef5ef;
+  --muted:#a9bbae;
+  --border:#345342;
 }
-
-.site-logo {
-    width: 75px;
-    height: 75px;
-    object-fit: contain;
-    flex-shrink: 0;
-}</style>
+* {box-sizing:border-box}
+body {
+  margin:0;
+  background:linear-gradient(160deg,#234633,#101a15 65%);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+  min-height:100vh;
+}
+header {
+  padding:22px 16px;
+  text-align:center;
+}
+header img {
+  width:85px;
+  height:85px;
+  object-fit:contain;
+}
+h1 {margin:8px 0;font-size:29px}
+header p {color:var(--muted)}
+nav {
+  display:flex;
+  overflow-x:auto;
+  gap:7px;
+  padding:10px;
+  position:sticky;
+  top:0;
+  background:#142219;
+  z-index:5;
+}
+nav button {
+  white-space:nowrap;
+  padding:11px 15px;
+  border-radius:30px;
+  border:1px solid var(--border);
+  background:#203329;
+  color:white;
+  font-weight:bold;
+}
+nav button.active {
+  background:var(--green);
+  color:#102318;
+}
+main {
+  max-width:850px;
+  margin:auto;
+  padding:12px;
+}
+.view {display:none}
+.view.active {display:block}
+.panel {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:17px;
+  padding:17px;
+  margin-bottom:14px;
+}
+h2 {margin-top:0}
+label {
+  display:block;
+  color:var(--light);
+  font-size:13px;
+  font-weight:bold;
+  margin:12px 0 5px;
+}
+input,select,textarea {
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#101b14;
+  color:white;
+  font-size:15px;
+}
+textarea {min-height:90px}
+button {cursor:pointer}
+.primary {
+  background:var(--green);
+  color:#102318;
+  border:0;
+  border-radius:11px;
+  padding:13px;
+  width:100%;
+  font-weight:bold;
+  margin-top:15px;
+}
+.secondary {
+  background:#294333;
+  color:white;
+  border:1px solid var(--border);
+  padding:10px;
+  border-radius:9px;
+}
+.entry {
+  background:#203329;
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:13px;
+  margin:10px 0;
+}
+.entry small {color:var(--muted)}
+.row {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.stat {
+  background:#203329;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:13px;
+  text-align:center;
+}
+.stat strong {
+  display:block;
+  font-size:23px;
+  color:var(--light);
+}
+.tag {
+  display:inline-block;
+  background:#345342;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:12px;
+  margin:3px;
+}
+.hidden {display:none!important}
+.muted {color:var(--muted);font-size:13px}
+.actions {display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.actions button {font-size:12px}
+@media(max-width:450px) {
+  .row {grid-template-columns:1fr}
+  .stats {gap:5px}
+  .stat {padding:8px}
+  .stat strong {font-size:19px}
+}
+</style>
 </head>
+
 <body>
+
 <header>
- <div class="eyebrow">Persönliches Session-Logbuch</div>
- <div class="header-brand">
-
-<h1>My Vaping Adventure</h1>
-<img src="Bilder/logo.png"
-alt="My Vaping Adventure Logo"
-class="site-logo">
-         </div>
- <p>Deine Geräte. Deine Sessions. Dein Überblick.</p>
+  <img src="Bilder/logo.png" alt="Vaping Adventure Logo">
+  <h1>Vaping Adventure</h1>
+  <p>Dein persönliches Vaping-Tagebuch</p>
+  <small>ALPHA 1.2</small>
 </header>
+
 <nav>
- <button class="active" data-tab="new">＋ Neuer Eintrag</button>
- <button data-tab="diary">▤ Tagebuch</button>
- <button data-tab="stats">◫ Statistik</button>
- <button data-tab="settings">⚙ Geräte</button>
- <button data-tab="adventure">🏆 Adventure</button>
- <button data-tab="education">🎓 Education</button>
+  <button class="active" data-tab="new">＋ Eintrag</button>
+  <button data-tab="diary">📖 Tagebuch</button>
+  <button data-tab="stats">📊 Statistik</button>
+  <button data-tab="devices">⚙ Geräte</button>
+  <button data-tab="adventure">🏆 Adventure</button>
+  <button data-tab="education">🎓 Education</button>
 </nav>
+
 <main>
+
+<!-- NEUER EINTRAG -->
 <section id="new" class="view active">
- 
-<div><label for="date">Datum</label><input id="date" type="date" required></div>
-<div><label for="time">Uhrzeit</label><input id="time" type="time" required></div>
+<div class="panel">
+<h2 id="formHeading">Neue Session</h2>
 
-<div class="full">
-  <label for="category">Gerätekategorie</label>
-  <select id="category" required>
-    <option value="vaporizer">Vaporizer</option>
-    <option value="ecig">E-Zigarette</option>
-    <option value="heater">Tabakerhitzer</option>
-  </select>
+<form id="entryForm">
+<input type="hidden" id="editId">
+
+<div class="row">
+<div>
+<label>Datum</label>
+<input type="date" id="date" required>
+</div>
+<div>
+<label>Uhrzeit</label>
+<input type="time" id="time" required>
+</div>
 </div>
 
-<div class="full">
-  <label for="device">Gerät</label>
-  <select id="device" required></select>
+<label>Gerätekategorie</label>
+<select id="category">
+<option value="vaporizer">Vaporizer</option>
+<option value="ecig">E-Zigarette</option>
+<option value="heater">Tabakerhitzer</option>
+</select>
+
+<label>Gerät</label>
+<select id="device" required></select>
+
+<div class="row">
+<div>
+<label>Dauer (Minuten)</label>
+<input type="number" id="duration" min="0" placeholder="Optional">
+</div>
+<div>
+<label>Anzahl Züge / Puffs</label>
+<input type="number" id="puffs" min="0" placeholder="Optional">
+</div>
 </div>
 
-<div><label for="duration">Dauer (Minuten)</label>
-<input id="duration" type="number" min="0" placeholder="z. B. 8"></div>
+<label id="strainLabel">Sorte / Material</label>
+<input id="strain" placeholder="Bezeichnung">
 
-<div><label for="puffs">Züge / Puffs</label>
-<input id="puffs" type="number" min="0" placeholder="optional"></div>
+<label>Ort</label>
+<input id="location" placeholder="Wo warst du?">
 
-<div id="methodField">
-  <label for="method">Füllmaterial / Verdampfer / Tank</label>
-  <select id="method">
-    <option>Dosierkapsel</option>
-    <option>Kräuterkammer</option>
-    <option>Ballvape / Injector</option>
-    <option>Konzentrateinsatz</option>
-    <option>Sonstiges</option>
-  </select>
-</div>
-
-<div class="full">
-  <label for="strain" id="strainLabel">Sorte / Material</label>
-  <input id="strain" placeholder="Bezeichnung">
-</div>
-
-<div id="thcField">
-  <label for="thc" id="thcLabel">THC-Gehalt (%)</label>
-  <input id="thc" type="number" min="0" step=".1">
-</div>
-
-<div id="cbdField">
-  <label for="cbd" id="cbdLabel">CBD-Gehalt (%)</label>
-  <input id="cbd" type="number" min="0" step=".1">
-</div>
-
-<div id="pgField" class="hidden">
-  <label for="pg">PG (%)</label>
-  <input id="pg" type="number" min="0" max="100" step=".1">
-</div>
-
-<div id="tempField">
-  <label for="temp" id="tempLabel">Temperatur (°C)</label>
-  <input id="temp" type="number" min="0" step="1">
-</div>
-
-<div id="amountField">
-  <label for="amount">Füllmenge (g)</label>
-  <input id="amount" type="number" min="0" step=".001">
-</div>
-
-<div class="full" id="capsuleFields">
-  <label for="capsule">Dosierkapsel – ID / Nummer</label>
-  <input id="capsule" placeholder="z. B. Kapsel 04">
-  <label for="capsuleUse">Verwendung der Füllung</label>
-  <select id="capsuleUse">
-    <option value="">Bitte auswählen</option>
-    <option value="1">1. Durchgang</option>
-    <option value="2">2. Durchgang</option>
-    <option value="3">3. Durchgang</option>
-    <option value="4">4. Durchgang</option>
-    <option value="5">5. Durchgang</option>
-    <option value="6">6. Durchgang oder öfter</option>
-  </select>
-</div>
-
-<div><label for="location">Ort</label>
-<input id="location" placeholder="z. B. Zuhause"></div>
-
-<div id="waterField">
-  <label for="water">Wasserfilter / Blubber</label>
-  <select id="water">
-    <option value="">Keine Angabe</option>
-    <option>Ja</option>
-    <option>Nein</option>
-  </select>
-</div>
-
-<div><label for="vapor">Dampfentwicklung</label>
+<label>Dampfentwicklung</label>
 <select id="vapor">
-  <option value="">Keine Angabe</option>
-  <option>Gering</option>
-  <option>Mittel</option>
-  <option>Stark</option>
-</select></div>
+<option value="">Keine Angabe</option>
+<option>Gering</option>
+<option>Mittel</option>
+<option>Stark</option>
+</select>
 
-<div><label for="taste">Geschmack (1–5)</label>
+<label>Geschmack</label>
 <select id="taste">
-  <option value="">Keine Angabe</option>
-  <option>1 – schwach</option>
-  <option>2</option>
-  <option>3</option>
-  <option>4</option>
-  <option>5 – hervorragend</option>
-</select></div>
+<option value="">Keine Angabe</option>
+<option value="1">1 – Schwach</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5 – Hervorragend</option>
+</select>
 
-<div class="full">
-  <label for="notes">Weiteres / Bemerkungen</label>
-  <textarea id="notes" placeholder="Eindrücke und Besonderheiten ..."></textarea>
-  </div>
-  <button class="primary" type="submit">Eintrag speichern</button>
-  <button class="secondary hidden" id="cancelEdit" type="button" style="width:100%;margin-top:8px">Bearbeitung abbrechen</button>
-  <p class="hint">Die Einträge werden lokal in diesem Browser auf deinem iPhone gespeichert.</p>
- </form>
+<label>Weiteres / Bewertungen</label>
+<textarea id="notes" placeholder="Deine Eindrücke ..."></textarea>
+
+<button class="primary" type="submit">Eintrag speichern</button>
+<button class="secondary hidden" id="cancelEdit" type="button">Abbrechen</button>
+</form>
+
+<p class="muted">Deine Einträge werden lokal auf deinem Gerät gespeichert.</p>
+</div>
 </section>
+
+<!-- TAGEBUCH -->
 <section id="diary" class="view">
- <div class="panel">
-  <h2>Deine Einträge</h2>
-  <div class="grid">
-   <div class="full"><label for="search">Suchen</label><input id="search" placeholder="Gerät, Sorte, Ort oder Notiz ..."></div>
-   <div><label for="filterDevice">Gerät filtern</label><select id="filterDevice"><option value="">Alle Geräte</option></select></div>
-   <div><label for="sort">Sortierung</label><select id="sort"><option value="new">Neueste zuerst</option><option value="old">Älteste zuerst</option></select></div>
-  </div>
- </div>
- <div id="entries"></div>
- <div class="actions"><button class="secondary" id="export">CSV exportieren</button><button class="secondary danger" id="clearAll">Alle Einträge löschen</button></div>
+<div class="panel">
+<h2>Mein Tagebuch</h2>
+<input id="search" placeholder="Einträge durchsuchen ...">
+<label>Gerätefilter</label>
+<select id="filterDevice">
+<option value="">Alle Geräte</option>
+</select>
+</div>
+<div id="entries"></div>
+<div class="panel">
+<button class="secondary" id="export">CSV exportieren</button>
+<button class="secondary" id="deleteAll">Alle Einträge löschen</button>
+</div>
 </section>
+
+<!-- STATISTIK -->
 <section id="stats" class="view">
- <div class="cards">
-  <div class="stat"><b id="total">0</b><span>Sessions</span></div>
-  <div class="stat"><b id="deviceCount">0</b><span>Geräte genutzt</span></div>
-  <div class="stat"><b id="avgTemp">–</b><span>Ø Temperatur</span></div>
- </div>
- <div class="panel"><h2>Häufigste Geräte</h2><div id="deviceStats" class="hint">Noch keine Daten vorhanden.</div></div>
- <div class="panel"><h2>Puff-Übersicht (nur Dokumentation)</h2><div id="puffStats" class="hint">Noch keine Puff-Angaben vorhanden.</div></div>
- <div class="panel"><h2>Zuletzt dokumentiert</h2><div id="lastSession" class="hint">Noch keine Einträge.</div></div>
+<div class="panel">
+<h2>Meine Statistiken</h2>
+<div class="stats">
+<div class="stat"><strong id="total">0</strong><small>Sessions</small></div>
+<div class="stat"><strong id="deviceCount">0</strong><small>Geräte</small></div>
+<div class="stat"><strong id="totalPuffs">0</strong><small>Puffs</small></div>
+</div>
+</div>
+<div class="panel">
+<h3>Meistgenutzte Geräte</h3>
+<div id="deviceStats"></div>
+</div>
+<div class="panel">
+<h3>Durchschnittliche Dauer</h3>
+<strong id="avgDuration">–</strong>
+</div>
 </section>
-<section id="settings" class="view">
- <div class="panel">
-  <h2>Geräteliste</h2>
-  <p class="sub">Du kannst die Liste ergänzen. Neue Geräte erscheinen danach im Eintragsformular.</p>
-  <div class="grid"><div class="full"><label for="newDevice">Neues Gerät</label><input id="newDevice" placeholder="Gerätename"></div></div>
-  <button class="primary" id="addDevice" type="button">Gerät hinzufügen</button>
-  <div id="deviceList" style="margin-top:14px"></div>
- </div>
- <div class="panel"><h2>Datensicherung</h2><p class="hint">Exportiere deine Einträge regelmäßig als CSV-Datei. Die Daten bleiben auf diesem Browser und werden nicht automatisch zwischen Geräten synchronisiert.</p><button class="secondary" id="export2">CSV exportieren</button></div>
+
+<!-- GERÄTE -->
+<section id="devices" class="view">
+<div class="panel">
+<h2>Meine Geräte</h2>
+<label>Gerätename</label>
+<input id="newDevice" placeholder="Neues Gerät">
+
+<label>Gerätekategorie</label>
+<select id="newCategory">
+<option value="vaporizer">Vaporizer</option>
+<option value="ecig">E-Zigarette</option>
+<option value="heater">Tabakerhitzer</option>
+</select>
+
+<button class="primary" id="addDevice" type="button">Gerät hinzufügen</button>
+<div id="deviceList"></div>
+</div>
 </section>
+
+<!-- ADVENTURE -->
 <section id="adventure" class="view">
- <div class="panel">
-  <h2>🏆 My Vaping Adventure</h2>
-  <p class="sub">Sammle Erfahrung durch Dokumentation, Lernen, Pflege und bewusste Pausen – nicht durch mehr Konsum.</p>
-  <div class="cards"><div class="stat"><b id="xpValue">0</b><span>XP</span></div><div class="stat"><b id="coinValue">0</b><span>Coins</span></div><div class="stat"><b id="levelValue">1</b><span>Level</span></div></div>
-  <h3>Questboard</h3><p class="hint">Schließe Aufgaben ab. Jede Quest kann nur einmal Coins/XP vergeben.</p>
-  <div id="questList"></div>
- </div>
- <div class="panel"><h2>🏅 Deine Erfolge</h2><div id="achievementList" class="hint">Noch keine Erfolge freigeschaltet.</div></div>
+<div class="panel">
+<h2>🏆 Vaping Adventure</h2>
+<p class="muted">Sammle XP und Coins durch Dokumentation, Wissen und Gerätepflege.</p>
+<div class="stats">
+<div class="stat"><strong id="xp">0</strong><small>XP</small></div>
+<div class="stat"><strong id="coins">0</strong><small>Coins</small></div>
+<div class="stat"><strong id="level">1</strong><small>Level</small></div>
+</div>
+</div>
+
+<div class="panel">
+<h2>Questboard</h2>
+<div id="quests"></div>
+</div>
 </section>
+
+<!-- EDUCATION -->
 <section id="education" class="view">
- <div class="panel">
-  <h2>🎓 My Vaping Academy</h2>
-  <p class="sub">Kompakte Lernkurse mit anschließender Prüfung. Bestehen ab 80 %. Inhalte behandeln auch Risiken und sichere Handhabung.</p>
-  <div class="cards"><div class="stat"><b id="courseDone">0</b><span>Kurse bestanden</span></div><div class="stat"><b id="eduCoins">0</b><span>Coins verdient</span></div><div class="stat"><b id="bestScore">–</b><span>Beste Prüfung</span></div></div>
-  <article class="entry"><h3>Grundkurs: Akkusicherheit</h3><div class="meta">Mini-Kurs · 5 Fragen · 25 Coins · Bestehen ab 4 richtigen Antworten</div>
-   <p>Wichtig: Verwende nur unbeschädigte, zum Gerät passende Akkus. Beachte Herstellerangaben, nutze geeignete Ladegeräte und transportiere lose Lithium-Ionen-Akkus niemals ungeschützt zusammen mit Metallgegenständen.</p>
-   <button class="primary" id="startQuiz" type="button">Prüfung starten</button>
-   <div id="quizArea" class="hidden" style="margin-top:14px"></div>
-   <div id="quizResult" class="hint" style="margin-top:10px"></div>
-  </article>
-  <article class="entry"><h3>Weitere Kurse – in Vorbereitung</h3><p>Vaping-Grundlagen · Kräuterverdampfer-Technik · Reinigung & Wartung · Temperaturwissen · E-Zigaretten-Grundlagen · Cannabis- und Gesundheitswissen</p></article>
- </div>
+<div class="panel">
+<h2>🎓 Vaping Education</h2>
+<p>Wissen rund um Geräte, Technik, Akkusicherheit und verantwortungsvollen Umgang.</p>
+<div class="stats">
+<div class="stat"><strong id="passed">0</strong><small>Kurse</small></div>
+<div class="stat"><strong id="eduCoins">0</strong><small>Coins</small></div>
+<div class="stat"><strong id="best">–</strong><small>Bestleistung</small></div>
+</div>
+</div>
+
+<div class="panel">
+<h3>Grundkurs: Akkusicherheit</h3>
+<p class="muted">Fünf Prüfungsfragen. Zum Bestehen benötigst du mindestens 80 Prozent.</p>
+<p>Beschädigte Akkus dürfen nicht weiterverwendet werden. Lose Lithium-Ionen-Akkus müssen gegen Kurzschluss geschützt transportiert werden.</p>
+<button class="primary" id="startQuiz">Prüfung starten</button>
+<div id="quiz"></div>
+<div id="quizResult"></div>
+</div>
 </section>
+
 </main>
+
 <script>
+"use strict";
 
-const defaultDevices=[
- "Storz & Bickel Venty",
- "Storz & Bickel Mighty",
- "Storz & Bickel Volcano",
- "Dr. Dabber Switch²",
- "TerpTorch",
- "TerpHammer",
- "Dynavap M7",
- "Dynavap G3",
- "Dynavap B2",
- "Dynavap The B",
- "XMAX Qomo",
- "Pax Flow",
- "Cuboo Stick",
- "Crossing Technology Flower Heater Gen 2",
- "Smono",
- "GeekVape Legend 5",
- "ELFX Mega",
- "IQOS",
- "glo",
- "Ploom"
-];
-
-const $=id=>document.getElementById(id);
-const read=(key,fallback)=>{
- try{return JSON.parse(localStorage.getItem(key))??fallback}
- catch{return fallback}
-};
-
-let devices=read("pvd_devices",defaultDevices);
-let entries=read("pvd_entries",[]);
-
-const fields=[
- "date","time","category","device","duration","puffs",
- "method","strain","thc","cbd","pg","temp","amount",
- "capsule","capsuleUse","location","water","vapor",
- "taste","notes"
-];
-
-function persist(){
- localStorage.setItem("pvd_devices",JSON.stringify(devices));
- localStorage.setItem("pvd_entries",JSON.stringify(entries));
+/* DATENSPEICHERUNG */
+function load(key, fallback) {
+  try {
+    return JSON.parse(localStorage.getItem(key)) ?? fallback;
+  } catch(e) {
+    return fallback;
+  }
+}
+function save(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
 }
 
-function today(){
+/* BESTEHENDE SPEICHER-SCHLÜSSEL */
+let entries = load("pvd_entries", []);
+let devices = load("pvd_devices", [
+ {name:"Venty",category:"vaporizer"},
+ {name:"Mighty",category:"vaporizer"},
+ {name:"Volcano",category:"vaporizer"},
+ {name:"Dr. Dabber Switch2",category:"vaporizer"},
+ {name:"TerpTorch",category:"vaporizer"},
+ {name:"TerpHammer",category:"vaporizer"},
+ {name:"Dynavap M7",category:"vaporizer"},
+ {name:"Dynavap G3",category:"vaporizer"},
+ {name:"Dynavap B2",category:"vaporizer"},
+ {name:"Dynavap The B",category:"vaporizer"},
+ {name:"XMAX Qomo",category:"vaporizer"},
+ {name:"Pax Flow",category:"vaporizer"},
+ {name:"Cuboo Stick",category:"vaporizer"},
+ {name:"Smono",category:"vaporizer"},
+ {name:"GeekVape Legend 5",category:"ecig"},
+ {name:"ELFX Mega",category:"ecig"},
+ {name:"IQOS",category:"heater"},
+ {name:"glo",category:"heater"}
+]);
+let game = load("pvd_game", {
+ xp:0,coins:0,quests:[],courses:{}
+});
+
+if(!Array.isArray(entries)) entries=[];
+if(!Array.isArray(devices)) devices=[];
+if(!Array.isArray(game.quests)) game.quests=[];
+if(!game.courses) game.courses={};
+
+const $ = id => document.getElementById(id);
+
+function escapeHTML(value) {
+ return String(value ?? "").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ })[c]);
+}
+
+function persist() {
+ save("pvd_entries",entries);
+ save("pvd_devices",devices);
+ save("pvd_game",game);
+}
+
+/* NAVIGATION */
+function showTab(tab) {
+ document.querySelectorAll(".view").forEach(section=>{
+   section.classList.toggle("active",section.id===tab);
+ });
+ document.querySelectorAll("nav button").forEach(button=>{
+   button.classList.toggle("active",button.dataset.tab===tab);
+ });
+
+ if(tab==="diary") renderEntries();
+ if(tab==="stats") renderStats();
+ if(tab==="devices") renderDevices();
+ if(tab==="adventure") renderAdventure();
+ if(tab==="education") renderEducation();
+
+ window.scrollTo(0,0);
+}
+
+document.querySelectorAll("nav button").forEach(button=>{
+ button.addEventListener("click",()=>showTab(button.dataset.tab));
+});
+
+/* DATUM UND UHRZEIT */
+function setDateTime() {
  const d=new Date();
- return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+ $("date").value=[
+ d.getFullYear(),
+ String(d.getMonth()+1).padStart(2,"0"),
+ String(d.getDate()).padStart(2,"0")
+ ].join("-");
+ $("time").value=
+ String(d.getHours()).padStart(2,"0")+":"+
+ String(d.getMinutes()).padStart(2,"0");
 }
 
-function nowTime(){
- const d=new Date();
- return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
-}
-
-function getDeviceCategory(name){
- const n=name.toLowerCase();
-
- if(/iqos|glo|ploom|neo|terea|heets/.test(n)) return "heater";
- if(/geekvape|elfx|vape|e-zig|legend 5/.test(n)) return "ecig";
-
- return "vaporizer";
-}
-
-function refreshDevices(){
- if(!Array.isArray(devices)) devices=[...defaultDevices];
-
+/* GERÄTEAUSWAHL */
+function refreshDevices() {
  const category=$("category").value;
  const current=$("device").value;
+ const available=devices.filter(d=>d.category===category);
 
- const filtered=devices.filter(d=>getDeviceCategory(d)===category);
+ $("device").innerHTML='<option value="">Gerät auswählen</option>'+
+ available.map(d=>`<option value="${escapeHTML(d.name)}">${escapeHTML(d.name)}</option>`).join("");
 
- $("device").innerHTML=
- '<option value="">Gerät auswählen …</option>'+
- filtered.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join("");
+ if(available.some(d=>d.name===current)) $("device").value=current;
 
- if(filtered.includes(current)) $("device").value=current;
+ const filter=$("filterDevice").value;
+ $("filterDevice").innerHTML='<option value="">Alle Geräte</option>'+
+ devices.map(d=>`<option value="${escapeHTML(d.name)}">${escapeHTML(d.name)}</option>`).join("");
+ $("filterDevice").value=filter;
+}
 
- $("filterDevice").innerHTML=
- '<option value="">Alle Geräte</option>'+
- devices.map(d=>`<option>${esc(d)}</option>`).join("");
+$("category").addEventListener("change",()=>{
+ const cat=$("category").value;
+ $("strainLabel").textContent=
+ cat==="heater"?"Stick-Sorte (NEO / TEREA usw.)":
+ cat==="ecig"?"Liquid / Aroma":"Sorte / Material";
+ refreshDevices();
+});
 
- $("deviceList").innerHTML=devices.map((d,i)=>
- `<div class="entry" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
- <span>${esc(d)} <small>(${getDeviceCategory(d)})</small></span>
- <button class="secondary danger" data-remove="${i}">Entfernen</button>
+function renderDevices() {
+ refreshDevices();
+ $("deviceList").innerHTML=devices.map((d,i)=>`
+ <div class="entry">
+ <b>${escapeHTML(d.name)}</b>
+ <small> · ${escapeHTML(d.category)}</small>
+ <button class="secondary" data-remove="${i}" type="button">Entfernen</button>
  </div>`).join("");
 }
 
-function esc(s){
- return String(s??"").replace(/[&<>"']/g,c=>({
- "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
- }[c]));
-}
+$("addDevice").addEventListener("click",()=>{
+ const name=$("newDevice").value.trim();
+ const category=$("newCategory").value;
+ if(!name) return alert("Bitte Gerätenamen eingeben.");
+ if(devices.some(d=>d.name.toLowerCase()===name.toLowerCase()))
+ return alert("Dieses Gerät existiert bereits.");
 
-function toggleCapsule(){
- $("capsuleFields").classList.toggle("hidden",
- $("method").value!=="Dosierkapsel");
-}
+ devices.push({name,category});
+ $("newDevice").value="";
+ persist();
+ renderDevices();
+});
 
-function updateCategoryFields(){
- const c=$("category").value;
+$("deviceList").addEventListener("click",e=>{
+ const i=e.target.dataset.remove;
+ if(i===undefined) return;
+ const name=devices[Number(i)].name;
+ if(entries.some(x=>x.device===name))
+ return alert("Das Gerät wird noch in Tagebucheinträgen verwendet.");
+ if(confirm("Gerät entfernen?")) {
+ devices.splice(Number(i),1);
+ persist();
+ renderDevices();
+ }
+});
 
- const show=(id,visible)=>{
-  $(id).classList.toggle("hidden",!visible);
- };
+/* TAGEBUCHEINTRÄGE */
+const fieldNames=[
+ "date","time","category","device","duration",
+ "puffs","strain","location","vapor","taste","notes"
+];
 
- show("methodField",c==="vaporizer"||c==="ecig");
- show("thcField",c==="vaporizer"||c==="ecig");
- show("cbdField",c==="vaporizer"||c==="ecig");
- show("pgField",c==="ecig");
- show("tempField",c==="vaporizer"||c==="ecig");
- show("amountField",c==="vaporizer");
- show("capsuleFields",c==="vaporizer"&&$("method").value==="Dosierkapsel");
- show("waterField",c==="vaporizer");
-
- $("methodField").querySelector("label").textContent=
- c==="ecig"?"Verdampfer / Tank":"Füllmaterial / Materialart";
-
- $("strainLabel").textContent=
- c==="ecig"?"Liquidsorte / Aroma":
- c==="heater"?"Stick-Sorte":"Sorte / Material";
-
- $("thcLabel").textContent=
- c==="ecig"?"Nikotingehalt (mg/ml)":"THC-Gehalt (%)";
-
- $("cbdLabel").textContent=
- c==="ecig"?"VG (%)":"CBD-Gehalt (%)";
-
- $("tempLabel").textContent=
- c==="ecig"?"Wattzahl (W)":"Temperatur (°C)";
-
+function resetForm() {
+ $("entryForm").reset();
+ $("editId").value="";
+ $("formHeading").textContent="Neue Session";
+ $("cancelEdit").classList.add("hidden");
+ setDateTime();
+ $("category").value="vaporizer";
+ $("strainLabel").textContent="Sorte / Material";
  refreshDevices();
 }
 
-function resetForm(){
- $("entryForm").reset();
- $("editId").value="";
- $("formTitle").textContent="Neue Session dokumentieren";
- $("cancelEdit").classList.add("hidden");
- $("date").value=today();
- $("time").value=nowTime();
- $("category").value="vaporizer";
- updateCategoryFields();
- toggleCapsule();
-}
-document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===tab));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));if(tab==="diary")renderEntries();if(tab==="stats")renderStats();if(tab==="settings")refreshDevices();if(tab==="adventure")renderAdventure();if(tab==="education")renderEducation()}
-document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
-$("method").addEventListener("change",()=>{
- toggleCapsule();
- updateCategoryFields();
-});
-
-$("category").addEventListener("change",updateCategoryFields);
 $("entryForm").addEventListener("submit",e=>{
- e.preventDefault();const data={};fields.forEach(f=>data[f]=$(f).value.trim());
- if(data.method!=="Dosierkapsel"){data.capsule="";data.capsuleUse=""}
- const id=$("editId").value; if(id){const i=entries.findIndex(x=>x.id===id);if(i>=0)entries[i]={...entries[i],...data}}
- else entries.push({id:String(Date.now())+"-"+Math.random().toString(36).slice(2,7),...data,created:new Date().toISOString()});
- persist();resetForm();showTab("diary");
-});
-$("cancelEdit").addEventListener("click",resetForm);
-function editEntry(id){const x=entries.find(e=>e.id===id);if(!x)return;showTab("new");$("editId").value=id;fields.forEach(f=>$(f).value=x[f]??"");$("formTitle").textContent="Eintrag bearbeiten";$("cancelEdit").classList.remove("hidden");toggleCapsule();window.scrollTo({top:0,behavior:"smooth"})}
-function removeEntry(id){if(confirm("Diesen Eintrag wirklich löschen?")){entries=entries.filter(e=>e.id!==id);persist();renderEntries();renderStats()}}
-function capsuleLabel(x){if(!x.capsuleUse)return"";let n=Number(x.capsuleUse);return n<=3?"★".repeat(n)+` ${n}. Durchgang`:`${n}. Durchgang`}
-function renderEntries(){
- let arr=[...entries],q=$("search").value.toLowerCase(),fd=$("filterDevice").value;
- if(fd)arr=arr.filter(x=>x.device===fd);
- if(q)arr=arr.filter(x=>fields.some(f=>String(x[f]??"").toLowerCase().includes(q)));
- arr.sort((a,b)=>$("sort").value==="new"?(b.date+b.time).localeCompare(a.date+a.time):(a.date+a.time).localeCompare(b.date+b.time));
- $("entries").innerHTML=arr.length?arr.map(x=>`<article class="entry"><div class="entrytop"><div><h3>Nr. ${entries.findIndex(e=>e.id===x.id)+1} · ${esc(x.device)}</h3><div class="meta">${esc(x.date)} · ${esc(x.time)} Uhr ${x.duration?`· ${esc(x.duration)} Min.`:""}</div></div><span class="tag">${esc(x.method)}</span></div><div class="tags">${x.strain?`<span class="tag">${esc(x.strain)}</span>`:""}${x.thc?`<span class="tag">THC ${esc(x.thc)} %</span>`:""}${x.cbd?`<span class="tag">CBD ${esc(x.cbd)} %</span>`:""}${x.temp?`<span class="tag">${esc(x.temp)} °C</span>`:""}${x.puffs!==undefined&&x.puffs!==""?`<span class="tag">${esc(x.puffs)} Puffs</span>`:""}${x.amount?`<span class="tag">${esc(x.amount)} g</span>`:""}${x.capsule?`<span class="tag">${esc(x.capsule)}</span>`:""}${x.capsuleUse?`<span class="tag">${esc(capsuleLabel(x))}</span>`:""}${x.location?`<span class="tag">${esc(x.location)}</span>`:""}</div>${x.notes?`<p>${esc(x.notes)}</p>`:""}<div class="actions"><button class="secondary" data-edit="${x.id}">Bearbeiten</button><button class="secondary danger" data-delete="${x.id}">Löschen</button></div></article>`).join(""):'<div class="panel empty">Noch keine Einträge. Lege deinen ersten Session-Eintrag an.</div>';
-}
-$("entries").addEventListener("click",e=>{let ed=e.target.dataset.edit,del=e.target.dataset.delete;if(ed)editEntry(ed);if(del)removeEntry(del)});
-["search","filterDevice","sort"].forEach(id=>$(id).addEventListener("input",renderEntries));
-function renderStats(){
- $("total").textContent=entries.length;$("deviceCount").textContent=new Set(entries.map(x=>x.device)).size;
- let temps=entries.map(x=>Number(x.temp)).filter(x=>Number.isFinite(x)&&x>0);$("avgTemp").textContent=temps.length?Math.round(temps.reduce((a,b)=>a+b,0)/temps.length)+"°":"–";
- let counts={};entries.forEach(x=>counts[x.device]=(counts[x.device]||0)+1);
- let sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
- $("deviceStats").innerHTML=sorted.length?sorted.map(([n,c])=>`<p style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:7px 0;margin:0"><span>${esc(n)}</span><b>${c}</b></p>`).join(""):"Noch keine Daten vorhanden.";
- let puffRows=entries.filter(x=>x.puffs!==undefined&&x.puffs!=="").map(x=>Number(x.puffs)).filter(Number.isFinite);$("puffStats").textContent=puffRows.length?`Dokumentierte Züge insgesamt: ${puffRows.reduce((a,b)=>a+b,0)} · Einträge mit Puff-Angabe: ${puffRows.length}`:"Noch keine Puff-Angaben vorhanden.";
- let last=[...entries].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time))[0];$("lastSession").textContent=last?`${last.date} · ${last.device} · ${last.strain||"Keine Sorte angegeben"}`:"Noch keine Einträge.";
-}
-function csvExport(){
- const cols=["Nr.",...fields],rows=[cols,...entries.map((x,i)=>[i+1,...fields.map(f=>x[f]??"")])];
- const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(";")).join("\r\n");
- const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="patricks-vaping-diary.csv";a.click();URL.revokeObjectURL(url);
-}
-$("export").addEventListener("click",csvExport);$("export2").addEventListener("click",csvExport);
-$("clearAll").addEventListener("click",()=>{if(confirm("Wirklich alle Tagebucheinträge unwiderruflich aus diesem Browser löschen?")){entries=[];persist();renderEntries();renderStats()}});
-$("addDevice").addEventListener("click",()=>{let n=$("newDevice").value.trim();if(!n)return;if(devices.some(d=>d.toLowerCase()===n.toLowerCase())){alert("Dieses Gerät ist bereits vorhanden.");return}devices.push(n);$("newDevice").value="";persist();refreshDevices()});
-$("deviceList").addEventListener("click",e=>{let i=e.target.dataset.remove;if(i===undefined)return;let name=devices[Number(i)];if(entries.some(x=>x.device===name)){alert("Das Gerät wird in bestehenden Einträgen verwendet und kann deshalb nicht entfernt werden.");return}if(confirm(`Gerät „${name}“ aus der Liste entfernen?`)){devices.splice(Number(i),1);persist();refreshDevices()}});
+ e.preventDefault();
 
-// Alpha-Spielstand: lokal im Browser gespeichert
-const gameRead=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
-let game=gameRead("pvd_game",{xp:0,coins:0,quests:[],courses:{}});
-function saveGame(){localStorage.setItem("pvd_game",JSON.stringify(game))}
-const quests=[
- {id:"diary5",title:"Chronist",desc:"Fünf Tagebucheinträge dokumentieren",xp:25,coins:10,check:()=>entries.length>=5},
- {id:"device3",title:"Geräte-Kenner",desc:"Drei unterschiedliche Geräte im Tagebuch festhalten",xp:30,coins:15,check:()=>new Set(entries.map(x=>x.device)).size>=3},
- {id:"care",title:"Technikpflege",desc:"Eine Reinigung oder Wartung in den Notizen dokumentieren",xp:15,coins:10,manual:true},
- {id:"pause",title:"Bewusste Pause",desc:"Eine selbst gewählte dampffreie Zeit dokumentieren",xp:20,coins:15,manual:true}
+ const data={};
+ fieldNames.forEach(id=>data[id]=$(id).value.trim());
+
+ if(!data.device) return alert("Bitte Gerät auswählen.");
+
+ const id=$("editId").value;
+
+ if(id) {
+   const index=entries.findIndex(x=>x.id===id);
+   if(index>=0) entries[index]={...entries[index],...data};
+ } else {
+   entries.push({
+     id:String(Date.now())+"-"+Math.random().toString(36).slice(2,7),
+     ...data,
+     created:new Date().toISOString()
+   });
+ }
+
+ persist();
+ resetForm();
+ showTab("diary");
+});
+
+$("cancelEdit").addEventListener("click",resetForm);
+
+function editEntry(id) {
+ const entry=entries.find(x=>x.id===id);
+ if(!entry) return;
+
+ showTab("new");
+ $("editId").value=id;
+
+ fieldNames.forEach(key=>{
+   $(key).value=entry[key] ?? "";
+ });
+
+ $("formHeading").textContent="Eintrag bearbeiten";
+ $("cancelEdit").classList.remove("hidden");
+ refreshDevices();
+ $("device").value=entry.device;
+}
+
+/* TAGEBUCH ANZEIGEN */
+function renderEntries() {
+ let list=[...entries];
+ const search=$("search").value.toLowerCase();
+ const filter=$("filterDevice").value;
+
+ if(filter) list=list.filter(x=>x.device===filter);
+
+ if(search) {
+   list=list.filter(x=>
+     fieldNames.some(key=>String(x[key]??"").toLowerCase().includes(search))
+   );
+ }
+
+ list.sort((a,b)=>
+   (String(b.date)+String(b.time)).localeCompare(String(a.date)+String(a.time))
+ );
+
+ $("entries").innerHTML=list.length ? list.map(x=>`
+ <div class="entry">
+ <h3>${escapeHTML(x.device)}</h3>
+ <small>${escapeHTML(x.date)} · ${escapeHTML(x.time)} Uhr</small>
+ <div style="margin-top:8px">
+ <span class="tag">${escapeHTML(x.category)}</span>
+ ${x.duration?`<span class="tag">${escapeHTML(x.duration)} Minuten</span>`:""}
+ ${x.puffs?`<span class="tag">${escapeHTML(x.puffs)} Puffs</span>`:""}
+ ${x.strain?`<span class="tag">${escapeHTML(x.strain)}</span>`:""}
+ ${x.location?`<span class="tag">${escapeHTML(x.location)}</span>`:""}
+ ${x.vapor?`<span class="tag">${escapeHTML(x.vapor)}</span>`:""}
+ ${x.taste?`<span class="tag">Geschmack ${escapeHTML(x.taste)}/5</span>`:""}
+ </div>
+ ${x.notes?`<p>${escapeHTML(x.notes)}</p>`:""}
+ <div class="actions">
+ <button class="secondary" data-edit="${escapeHTML(x.id)}">Bearbeiten</button>
+ <button class="secondary" data-delete="${escapeHTML(x.id)}">Löschen</button>
+ </div>
+ </div>`).join("") :
+ '<div class="panel">Noch keine Einträge vorhanden.</div>';
+}
+
+$("entries").addEventListener("click",e=>{
+ if(e.target.dataset.edit) editEntry(e.target.dataset.edit);
+
+ if(e.target.dataset.delete) {
+   const id=e.target.dataset.delete;
+   if(confirm("Eintrag wirklich löschen?")) {
+     entries=entries.filter(x=>x.id!==id);
+     persist();
+     renderEntries();
+   }
+ }
+});
+
+$("search").addEventListener("input",renderEntries);
+$("filterDevice").addEventListener("change",renderEntries);
+
+$("deleteAll").addEventListener("click",()=>{
+ if(confirm("Wirklich alle Einträge löschen?")) {
+   entries=[];
+   persist();
+   renderEntries();
+   renderStats();
+ }
+});
+
+/* CSV EXPORT */
+function exportCSV() {
+ const rows=[
+  ["Datum","Uhrzeit","Kategorie","Gerät","Dauer","Puffs","Sorte","Ort","Dampf","Geschmack","Notizen"],
+  ...entries.map(x=>fieldNames.map(k=>x[k]??""))
+ ];
+
+ const csv=rows.map(row=>
+   row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(";")
+ ).join("\r\n");
+
+ const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;
+ a.download="Vaping-Adventure-Tagebuch.csv";
+ a.click();
+ URL.revokeObjectURL(url);
+}
+$("export").addEventListener("click",exportCSV);
+
+/* STATISTIK */
+function renderStats() {
+ $("total").textContent=entries.length;
+ $("deviceCount").textContent=new Set(entries.map(x=>x.device)).size;
+
+ const puffs=entries.reduce((sum,x)=>sum+(Number(x.puffs)||0),0);
+ $("totalPuffs").textContent=puffs;
+
+ const durations=entries.map(x=>Number(x.duration)).filter(x=>x>0);
+ $("avgDuration").textContent=durations.length?
+ Math.round(durations.reduce((a,b)=>a+b,0)/durations.length)+" Min.":"–";
+
+ const counts={};
+ entries.forEach(x=>{
+   if(x.device) counts[x.device]=(counts[x.device]||0)+1;
+ });
+
+ $("deviceStats").innerHTML=Object.entries(counts)
+ .sort((a,b)=>b[1]-a[1])
+ .map(([name,count])=>`
+ <p>${escapeHTML(name)} <b>${count}</b></p>`).join("")||"Noch keine Daten.";
+}
+
+/* ADVENTURE / QUESTS */
+const questData=[
+ {id:"five",name:"Chronist",description:"Fünf Tagebucheinträge erstellen",xp:25,coins:10,check:()=>entries.length>=5},
+ {id:"three",name:"Geräte-Kenner",description:"Drei verschiedene Geräte dokumentieren",xp:30,coins:15,check:()=>new Set(entries.map(x=>x.device)).size>=3},
+ {id:"ten",name:"Abenteurer",description:"Zehn Tagebucheinträge erstellen",xp:50,coins:25,check:()=>entries.length>=10}
 ];
-function claimQuest(id){const q=quests.find(x=>x.id===id);if(!q||game.quests.includes(id))return;if(q.check&&!q.check())return;game.quests.push(id);game.xp+=q.xp;game.coins+=q.coins;saveGame();renderAdventure()}
-function renderAdventure(){const level=Math.floor(game.xp/100)+1;$("xpValue").textContent=game.xp;$("coinValue").textContent=game.coins;$("levelValue").textContent=level;$("questList").innerHTML=quests.map(q=>{let done=game.quests.includes(q.id),ready=q.manual||q.check();return `<div class="entry"><div class="entrytop"><div><h3>${esc(q.title)}</h3><div class="meta">${esc(q.desc)}</div></div><span class="tag">+${q.xp} XP · +${q.coins} Coins</span></div><button class="${done?'secondary':'primary'}" data-quest="${q.id}" ${done||!ready?'disabled':''}>${done?'Erledigt ✓':q.manual?'Quest abschließen':'Automatisch prüfen'}</button></div>`}).join("");$("achievementList").textContent=game.quests.length?`${game.quests.length} Quest(s) abgeschlossen · Level ${level}`:"Noch keine Erfolge freigeschaltet."}
-$("questList").addEventListener("click",e=>{const id=e.target.dataset.quest;if(id)claimQuest(id)});
-const quiz=[
- {q:"Was solltest du mit einem beschädigten Akku tun?",a:["Weiterverwenden, wenn er noch lädt","Nicht mehr verwenden und fachgerecht ersetzen/entsorgen","Mit Klebeband umwickeln"],c:1,e:"Beschädigte Akkus nicht weiterverwenden."},
- {q:"Wie transportierst du lose Lithium-Ionen-Akkus?",a:["Ungeschützt in der Hosentasche","Zusammen mit Schlüsseln","In einer geeigneten Schutzhülle oder Box"],c:2,e:"Kurzschluss durch Metallgegenstände vermeiden."},
- {q:"Welche Ladequelle ist sinnvoll?",a:["Ein geeignetes, intaktes Ladegerät gemäß Herstellerangaben","Beliebiges Netzteil mit passendem Stecker","Ein beschädigtes Kabel"],c:0,e:"Ladegerät und Ladeverfahren müssen zum Akku passen."},
- {q:"Was gilt bei ungewöhnlicher Hitze, Geruch oder Aufblähen?",a:["Sofort pausieren und Abstand halten; Hersteller-/Sicherheitsanweisungen beachten","Weiterladen und beobachten","Akku zusammendrücken"],c:0,e:"Ungewöhnliche Erwärmung oder Verformung ist ein Warnzeichen."},
- {q:"Wie sollten Akkus gelagert werden?",a:["Lose mit Metallteilen","Trocken, kühl, geschützt und nach Herstellerangaben","In direkter Sonne"],c:1,e:"Herstellerangaben und geeignete Lagerbedingungen beachten."}
+
+function renderAdventure() {
+ $("xp").textContent=game.xp;
+ $("coins").textContent=game.coins;
+ $("level").textContent=Math.floor(game.xp/100)+1;
+
+ $("quests").innerHTML=questData.map(q=>{
+ const done=game.quests.includes(q.id);
+ const ready=q.check();
+
+ return `<div class="entry">
+ <h3>${escapeHTML(q.name)}</h3>
+ <p>${escapeHTML(q.description)}</p>
+ <small>+${q.xp} XP · +${q.coins} Coins</small>
+ <button class="primary" data-quest="${q.id}" ${done||!ready?"disabled":""}>
+ ${done?"Erledigt ✓":ready?"Belohnung abholen":"Noch nicht erreicht"}
+ </button>
+ </div>`;
+ }).join("");
+}
+
+$("quests").addEventListener("click",e=>{
+ const id=e.target.dataset.quest;
+ const q=questData.find(x=>x.id===id);
+ if(!q||game.quests.includes(id)||!q.check()) return;
+
+ game.quests.push(id);
+ game.xp+=q.xp;
+ game.coins+=q.coins;
+ persist();
+ renderAdventure();
+});
+
+/* EDUCATION */
+const questions=[
+ {
+  q:"Was machst du mit einem beschädigten Akku?",
+  a:["Weiterverwenden","Nicht weiterverwenden","Mit Klebeband reparieren"],
+  correct:1
+ },
+ {
+  q:"Wie transportierst du lose Akkus?",
+  a:["Ungeschützt","Mit Schlüsseln zusammen","In einer geeigneten Schutzhülle"],
+  correct:2
+ },
+ {
+  q:"Welches Ladegerät solltest du verwenden?",
+  a:["Ein geeignetes Ladegerät nach Herstellerangaben","Irgendein Netzteil","Ein beschädigtes Kabel"],
+  correct:0
+ },
+ {
+  q:"Was ist bei ungewöhnlicher Akkuhitze wichtig?",
+  a:["Ignorieren","Gerät nicht weiterverwenden und Sicherheitsmaßnahmen beachten","Weiterladen"],
+  correct:1
+ },
+ {
+  q:"Wie lagerst du Akkus?",
+  a:["Trocken und geschützt nach Herstellerangaben","In direkter Sonne","Lose mit Metallteilen"],
+  correct:0
+ }
 ];
-function renderEducation(){const done=Object.values(game.courses).filter(x=>x.passed).length;$("courseDone").textContent=done;$("eduCoins").textContent=Object.values(game.courses).reduce((n,x)=>n+(x.coins||0),0);const scores=Object.values(game.courses).map(x=>x.score||0);$("bestScore").textContent=scores.length?Math.max(...scores)+" %":"–"}
-function startQuiz(){let area=$("quizArea");area.classList.remove("hidden");$("quizResult").textContent="";area.innerHTML=quiz.map((q,i)=>`<div class="entry"><b>${i+1}. ${esc(q.q)}</b>${q.a.map((a,j)=>`<label class="checkrow" style="margin-top:9px"><input type="radio" name="q${i}" value="${j}"> ${esc(a)}</label>`).join("")}</div>`).join("")+`<button class="primary" id="submitQuiz" type="button">Prüfung abgeben</button>`;$("submitQuiz").addEventListener("click",()=>{let score=0,unanswered=0;quiz.forEach((q,i)=>{let v=area.querySelector(`input[name="q${i}"]:checked`);if(!v)unanswered++;else if(Number(v.value)===q.c)score++});if(unanswered){$("quizResult").textContent=`Bitte beantworte noch ${unanswered} Frage(n).`;return}let percent=Math.round(score/quiz.length*100),passed=percent>=80,previous=game.courses.battery;if(passed&&!previous?.passed){game.coins+=25;game.xp+=30;game.courses.battery={passed:true,score:percent,coins:25,date:new Date().toISOString()};saveGame()}else if(!previous||percent>(previous.score||0)){game.courses.battery={...(previous||{}),score:percent,passed:!!previous?.passed,coins:previous?.coins||0};saveGame()}$("quizResult").innerHTML=`<b>${passed?'Bestanden! 🎉':'Noch nicht bestanden.'}</b> Ergebnis: ${score}/${quiz.length} (${percent} %). ${passed?(previous?.passed?'Kurs bereits bestanden – keine doppelten Coins.':'Du erhältst 25 Coins und 30 XP.'):'Du kannst die Prüfung nach dem Lernen wiederholen.'}<br><br>`+quiz.map((q,i)=>`${i+1}. ${q.e}`).join("<br>");renderEducation();renderAdventure()})}
+
+function renderEducation() {
+ const course=game.courses.battery;
+ $("passed").textContent=course&&course.passed?1:0;
+ $("eduCoins").textContent=course?course.coins||0:0;
+ $("best").textContent=course?course.score+" %":"–";
+}
+
+function startQuiz() {
+ $("quiz").innerHTML=questions.map((q,i)=>`
+ <div class="entry">
+ <b>${i+1}. ${escapeHTML(q.q)}</b>
+ ${q.a.map((answer,j)=>`
+ <label style="display:flex;gap:8px;align-items:center;color:white;font-weight:normal">
+ <input style="width:auto" type="radio" name="question${i}" value="${j}">
+ ${escapeHTML(answer)}
+ </label>`).join("")}
+ </div>`).join("")+
+ '<button class="primary" id="submitQuiz">Prüfung abgeben</button>';
+
+ $("submitQuiz").addEventListener("click",()=>{
+   let score=0;
+   for(let i=0;i<questions.length;i++) {
+     const answer=document.querySelector(`input[name="question${i}"]:checked`);
+     if(!answer) return alert("Bitte alle Fragen beantworten.");
+     if(Number(answer.value)===questions[i].correct) score++;
+   }
+
+   const percent=Math.round(score/questions.length*100);
+   const passed=percent>=80;
+   const old=game.courses.battery;
+
+   if(passed&&(!old||!old.passed)) {
+     game.coins+=25;
+     game.xp+=30;
+     game.courses.battery={passed:true,score:percent,coins:25};
+   } else if(!old||percent>old.score) {
+     game.courses.battery={...old,score:percent};
+   }
+
+   persist();
+   $("quizResult").innerHTML=
+   `<div class="entry"><h3>${passed?"Bestanden! 🎉":"Noch nicht bestanden"}</h3>
+   Ergebnis: ${score}/5 – ${percent}%</div>`;
+
+   renderEducation();
+   renderAdventure();
+ });
+}
+
 $("startQuiz").addEventListener("click",startQuiz);
-resetForm();renderStats();renderAdventure();renderEducation();
+
+/* INITIALISIERUNG */
+setDateTime();
+refreshDevices();
+renderDevices();
+renderStats();
+renderAdventure();
+renderEducation();
+
 </script>
 </body>
 </html>
