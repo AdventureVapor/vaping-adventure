@@ -388,7 +388,7 @@ function resetForm(){
  updateCategoryFields();
  toggleCapsule();
 }
-udocument.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===tab));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));if(tab==="diary")renderEntries();if(tab==="stats")renderStats();if(tab==="settings")refreshDevices();if(tab==="adventure")renderAdventure();if(tab==="education")renderEducation()}
+document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===tab));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));if(tab==="diary")renderEntries();if(tab==="stats")renderStats();if(tab==="settings")refreshDevices();if(tab==="adventure")renderAdventure();if(tab==="education")renderEducation()}
 document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
 $("method").addEventListener("change",()=>{
  toggleCapsule();
