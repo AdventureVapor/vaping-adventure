@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f5f4ef"><meta name="description" content="Dein privates Vaping-Tagebuch – lokal auf deinem Gerät.">
+  <title>My Vaping Adventure</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar"><button class="brand" data-page="home"><span class="mark">✳</span><span><b>My Vaping</b><small>ADVENTURE · DEIN PRIVATES TAGEBUCH</small></span></button><div class="topright"><span class="local"><i></i> Nur auf diesem Gerät</span><div class="avatar">M</div></div></header>
+<div class="shell"><aside class="sidebar"><div class="nav-label">DEIN BEREICH</div><button class="nav active" data-page="home"><span>⌂</span> Übersicht</button><button class="nav" data-page="diary"><span>▤</span> Vaping Diary <em id="diary-count">0</em></button><button class="nav" data-page="strains"><span>❋</span> Strain Collection</button><button class="nav" data-page="devices"><span>▱</span> Geräte</button><button class="nav" data-page="gallery"><span>▧</span> Photo Gallery</button><div class="nav-label space">ADVENTURE</div><button class="nav" data-page="quests"><span>✧</span> Quests & Ziele</button><button class="nav" data-page="learn"><span>◉</span> Education</button><div class="sidebar-note"><span>◌</span><b>Deine Daten bleiben bei dir.</b><p>Dieses Tagebuch speichert alles lokal in deinem Browser. Keine Cloud, kein Konto.</p><button class="text-btn" data-page="backup">Datensicherung ansehen →</button></div></aside>
+<main id="view"></main></div>
+<nav class="mobile-nav"><button class="active" data-page="home">⌂<small>Home</small></button><button data-page="diary">▤<small>Tagebuch</small></button><button data-page="strains">❋<small>Sorten</small></button><button data-page="quests">✧<small>Quests</small></button><button data-page="more">•••<small>Mehr</small></button></nav>
+<div id="modal-root"></div><input id="file-input" type="file" accept="image/*" hidden><script src="app.js"></script>
+</body></html>
