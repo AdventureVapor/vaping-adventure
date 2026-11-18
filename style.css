@@ -47,3 +47,18 @@
 .support-footer{margin:42px auto 8px;padding:24px 12px 10px;border-top:1px solid var(--line);text-align:center;}
 .support-footer p{margin:0 0 13px;color:var(--muted);font-size:12px;font-weight:700;}
 .support-footer img{display:block;width:min(230px,72vw);height:auto;max-height:100px;object-fit:contain;margin:0 auto;}
+
+
+/* Hilfe-Bibliothek oben rechts */
+.help-trigger{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px 7px 8px;color:var(--green);font-size:12px;font-weight:700;box-shadow:0 2px 5px #00000005}
+.help-trigger span{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--green);color:#fff;font:800 17px Manrope}
+.help-trigger:hover{background:#eff3e9}
+.help-library{width:min(680px,100%)}
+.help-library .help-intro{color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 17px}
+.help-search{width:100%;margin-bottom:14px}
+.help-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.help-topic{border:1px solid var(--line);border-radius:11px;padding:13px;background:#fff}
+.help-topic h3{font:700 13px Manrope;margin:0 0 6px;color:var(--green)}
+.help-topic p{font-size:11px;line-height:1.55;color:var(--muted);margin:0}
+.help-topic[hidden]{display:none}
+@media(max-width:650px){.help-trigger{padding:6px 11px 6px 7px}.help-trigger span{width:30px;height:30px}.help-list{grid-template-columns:1fr}.help-library{padding:18px}.help-library .modal-foot{flex-wrap:wrap}}
