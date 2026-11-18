@@ -27,7 +27,56 @@ async function cloudRead(){let rows=await cloudFetch(`/rest/v1/mva_saves?select=
 async function cloudWrite(){if(!cloudSession||!cloudKey)return;let payload=await encryptCloud(db);await cloudFetch('/rest/v1/mva_saves?on_conflict=user_id',{method:'POST',headers:{Authorization:`Bearer ${cloudSession.token}`,Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:cloudSession.userId,payload,updated_at:new Date().toISOString()})});setCloudStatus('Cloud gespeichert')}
 function scheduleCloudSave(){if(!cloudSession||!cloudKey)return;setCloudStatus('Änderungen werden gespeichert …');clearTimeout(cloudTimer);cloudTimer=setTimeout(()=>cloudWrite().catch(e=>{console.error(e);setCloudStatus('Cloud-Speicherung fehlgeschlagen');toast('Cloud-Speicherung fehlgeschlagen. Prüfe deine Verbindung und melde dich erneut an.') }),700)}
 function setCloudStatus(text){let el=$('#storage-status');if(el)el.innerHTML=`<i></i> ${esc(text)}`}
-async function cloudLogin(signup){let identifier=$('#cloud-login')?.value.trim()||'',encryptionPassword=$('#cloud-enc-pass')?.value||'',username=$('#cloud-new-user')?.value.trim()||'',email=$('#cloud-email')?.value.trim()||'',password=$('#cloud-pass')?.value||'';if(signup){if(!/^[a-zA-Z0-9_.-]{3,32}$/.test(username))return toast('Benutzername: 3–32 Zeichen, Buchstaben, Zahlen, Punkt, _ oder -');if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))return toast('Bitte eine gültige E-Mail-Adresse eingeben.')}else if(!identifier)return toast('Bitte E-Mail-Adresse oder bisherigen Benutzernamen eingeben.');if(!password||password.length<8)return toast('Das Kennwort muss mindestens 8 Zeichen haben.');let button=$('#cloud-connect');if(button){button.disabled=true;button.textContent='Verbinde …'}try{cloudPassword=encryptionPassword||password;let auth=await cloudAuth(identifier,password,signup,email,username);if(signup){if(auth.confirmationRequired){toast('Registrierung angelegt. Bitte bestätige zuerst den Link in deiner E-Mail und melde dich danach mit deiner E-Mail-Adresse an.');return}cloudSession=auth}else cloudSession=auth;let box=await cloudRead();if(box){let cloudData=await decryptCloud(box);if(confirm('Cloud-Spielstand gefunden. OK = Cloud-Spielstand verwenden.')){db=cloudData;storageMode='cloud';setCloudStatus(`Verschlüsselte Cloud · ${cloudSession.username}`);render()}else if(confirm('Soll stattdessen dein lokaler Spielstand den vorhandenen Cloud-Spielstand ERSETZEN?')){db=localDb;storageMode='cloud';await cloudWrite();render()}else{cloudSession=null;cloudKey=null;cloudSalt=null;storageMode='local';db=localDb;render();return}}else{if(!confirm('Das Cloud-Konto ist leer. Deinen lokalen Spielstand jetzt verschlüsselt hochladen?')){cloudSession=null;cloudKey=null;cloudPassword='';storageMode='local';db=localDb;render();return}db=localDb;storageMode='cloud';cloudSalt=crypto.getRandomValues(new Uint8Array(16));cloudKey=await deriveCloudKey(password,cloudSalt);await cloudWrite();render()}$('#cloud-pass').value='';if($('#cloud-enc-pass'))$('#cloud-enc-pass').value='';toast('Mit der Cloud verbunden')}catch(e){console.error(e);cloudSession=null;cloudKey=null;cloudPassword='';storageMode='local';db=localDb;setCloudStatus('Lokal gespeichert');toast(e.message||'Cloud-Verbindung fehlgeschlagen')}finally{cloudPassword='';if($('#cloud-connect')){$('#cloud-connect').disabled=false;$('#cloud-connect').textContent='Verbinden'}}}
+async function cloudLogin(signup){
+ let identifier=$('#cloud-login')?.value.trim()||'',encryptionPassword=$('#cloud-enc-pass')?.value||'',username=$('#cloud-new-user')?.value.trim()||'',email=$('#cloud-email')?.value.trim()||'',password=$('#cloud-pass')?.value||'';
+ if(signup){if(!/^[a-zA-Z0-9_.-]{3,32}$/.test(username))return toast('Benutzername: 3–32 Zeichen, Buchstaben, Zahlen, Punkt, _ oder -');if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))return toast('Bitte eine gültige E-Mail-Adresse eingeben.')}
+ else if(!identifier)return toast('Bitte E-Mail-Adresse oder bisherigen Benutzernamen eingeben.');
+ if(!password||password.length<8)return toast('Das Kennwort muss mindestens 8 Zeichen haben.');
+ let button=$('#cloud-connect');if(button){button.disabled=true;button.textContent='Verbinde …'}
+ try{
+  cloudPassword=encryptionPassword||password;
+  let auth=await cloudAuth(identifier,password,signup,email,username);
+  if(signup){
+   if(auth.confirmationRequired){toast('Registrierung angelegt. Bitte bestätige zuerst den Link in deiner E-Mail und melde dich danach mit deiner E-Mail-Adresse an.');return}
+   cloudSession=auth;
+  }else cloudSession=auth;
+  let box=await cloudRead();
+  if(box){
+   let cloudData=await decryptCloud(box);
+   openModal('Spielstand auswählen',`
+    <p class="subheading">In deinem Cloud-Konto ist bereits ein Spielstand gespeichert. Entscheide, welche Daten künftig auf allen Geräten verwendet werden sollen.</p>
+    <label class="card" style="display:block;margin:12px 0;cursor:pointer"><input type="radio" name="cloud-choice" value="local" style="width:auto;margin-right:8px"> <b>Lokalen Spielstand hochladen</b><div class="tagline" style="margin:7px 0 0">${db.entries.length} Einträge · ${db.devices.length} Geräte · ${db.strains.length} Sorten · ${db.photos.length} Fotos</div><p class="tagline">Ersetzt den bisherigen Cloud-Spielstand mit den Daten dieses Browsers.</p></label>
+    <label class="card" style="display:block;margin:12px 0;cursor:pointer"><input type="radio" name="cloud-choice" value="cloud" checked style="width:auto;margin-right:8px"> <b>Cloud-Spielstand laden</b><div class="tagline" style="margin:7px 0 0">${cloudData.entries?.length||0} Einträge · ${cloudData.devices?.length||0} Geräte · ${cloudData.strains?.length||0} Sorten · ${cloudData.photos?.length||0} Fotos</div><p class="tagline">Ersetzt den aktuell angezeigten lokalen Spielstand auf diesem Gerät.</p></label>
+    <p class="tagline">Dein JSON-Backup bleibt davon unberührt. Wähle bewusst aus, welcher Spielstand maßgeblich sein soll.</p>
+   `,'Auswahl übernehmen',async()=>{
+    let choice=$('[name="cloud-choice"]:checked')?.value;
+    if(choice==='local'){
+     if(!confirm('Wirklich den lokalen Spielstand hochladen und den bisherigen Cloud-Spielstand ersetzen?'))return;
+     await cloudWrite();
+     storageMode='cloud';setCloudStatus('Verschlüsselte Cloud · '+cloudSession.username);
+     $('#modal-root').innerHTML='';render();toast('Lokaler Spielstand sicher in die Cloud übertragen');
+    }else{
+     db=cloudData;storageMode='cloud';setCloudStatus('Verschlüsselte Cloud · '+cloudSession.username);
+     $('#modal-root').innerHTML='';render();toast('Cloud-Spielstand geladen');
+    }
+   });
+  }else{
+   cloudSalt=crypto.getRandomValues(new Uint8Array(16));
+   cloudKey=await deriveCloudKey(password,cloudSalt);
+   if(!confirm(`Dein Cloud-Konto ist noch leer. Soll der lokale Spielstand jetzt verschlüsselt hochgeladen werden?\\n\\n${db.entries.length} Einträge · ${db.devices.length} Geräte · ${db.strains.length} Sorten · ${db.photos.length} Fotos`)){
+    cloudSession=null;cloudKey=null;cloudSalt=null;cloudPassword='';storageMode='local';db=localDb;render();return;
+   }
+   storageMode='cloud';await cloudWrite();render();toast('Lokaler Spielstand sicher in die Cloud übertragen');
+  }
+  if($('#cloud-pass'))$('#cloud-pass').value='';
+  if($('#cloud-enc-pass'))$('#cloud-enc-pass').value='';
+ }catch(e){
+  console.error(e);cloudSession=null;cloudKey=null;cloudSalt=null;cloudPassword='';storageMode='local';db=localDb;setCloudStatus('Nur auf diesem Gerät');toast(e.message||'Cloud-Verbindung fehlgeschlagen')
+ }finally{
+  cloudPassword='';
+  if($('#cloud-connect')){$('#cloud-connect').disabled=false;$('#cloud-connect').textContent='Verbinden'}
+ }
+}
 async function cloudResetPassword(){let email=$('#cloud-reset-email')?.value.trim().toLowerCase();if(!email||!email.includes('@'))return toast('Bitte deine registrierte E-Mail-Adresse eingeben.');try{let c=cloudConfig(),r=await fetch(`${c.url.replace(/\/$/,'')}/auth/v1/recover?redirect_to=${encodeURIComponent(location.origin+location.pathname)}`,{method:'POST',headers:{apikey:c.apiKey,'Content-Type':'application/json'},body:JSON.stringify({email})});let d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.msg||d.message||'Wiederherstellungs-E-Mail konnte nicht gesendet werden.');toast('Falls das Konto existiert, wurde eine Wiederherstellungs-E-Mail versendet.')}catch(e){toast(e.message||'E-Mail-Versand fehlgeschlagen')}}
 async function cloudChangeEmail(){if(!cloudSession)return toast('Bitte zuerst anmelden.');let email=$('#cloud-change-email')?.value.trim().toLowerCase();if(!email||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))return toast('Bitte eine gültige E-Mail-Adresse eingeben.');try{let r=await cloudFetch('/auth/v1/user',{method:'PUT',headers:{Authorization:`Bearer ${cloudSession.token}`},body:JSON.stringify({email,data:{username:cloudSession.username}})});toast('Bestätigungslink wurde angefordert. Bitte prüfe dein E-Mail-Postfach und bestätige die neue Adresse.');if(r.user?.email)cloudSession.pendingEmail=email}catch(e){toast(e.message||'E-Mail-Adresse konnte nicht geändert werden.')}}
 function emptyDb(){return {entries:[],devices:defaults.map(x=>({...x})),strains:[],photos:[],game:{xp:0,coins:0,quests:[],courses:{}}}}
