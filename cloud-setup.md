@@ -78,10 +78,6 @@ Die bisherige Alpha 1.2-Anmeldung erzeugte interne Adressen der Form `benutzerna
 
 
 
-Die bisherige Alpha 1.2-Anmeldung erzeugte interne Adressen der Form `benutzername@mva.invalid`. Das sind keine echten E-Mail-Adressen. Diese Konten können nicht automatisch durch bloßes Ändern der Oberfläche in verifizierte E-Mail-Konten umgewandelt werden.
-
-Vor einer Kontenmigration muss für jedes bestehende Konto ein kontrollierter Migrationsweg festgelegt werden. Lokale Daten sollten vorher als JSON-Backup exportiert werden.
-
 ## 6. Sicherheitscheck vor Veröffentlichung
 
 - [ ] Nur Publishable-/Anon-Key im Frontend
