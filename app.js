@@ -52,9 +52,11 @@ async function cloudLogin(signup){
     let choice=$('[name="cloud-choice"]:checked')?.value;
     if(choice==='local'){
      if(!confirm('Wirklich den lokalen Spielstand hochladen und den bisherigen Cloud-Spielstand ersetzen?'))return;
-     await cloudWrite();
-     storageMode='cloud';setCloudStatus('Verschlüsselte Cloud · '+cloudSession.username);
-     $('#modal-root').innerHTML='';render();toast('Lokaler Spielstand sicher in die Cloud übertragen');
+     try{
+      await cloudWrite();
+      storageMode='cloud';setCloudStatus('Verschlüsselte Cloud · '+cloudSession.username);
+      $('#modal-root').innerHTML='';render();toast('Lokaler Spielstand sicher in die Cloud übertragen');
+     }catch(error){setCloudStatus('Cloud-Übertragung fehlgeschlagen');toast(error.message||'Upload fehlgeschlagen. Deine lokalen Daten bleiben erhalten.');}
     }else{
      db=cloudData;storageMode='cloud';setCloudStatus('Verschlüsselte Cloud · '+cloudSession.username);
      $('#modal-root').innerHTML='';render();toast('Cloud-Spielstand geladen');
