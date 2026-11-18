@@ -62,11 +62,21 @@ Die Anwendung muss Bestätigungslinks wieder auf die App zurückführen können.
 
 ## 4. Passwort-Wiederherstellung und Verschlüsselung
 
-Die Tagebuchdaten werden clientseitig verschlüsselt. Das bedeutet: Supabase kann ein vergessenes Verschlüsselungskennwort nicht kennen und die Daten nicht selbst entschlüsseln.
+Die Anwendung verschlüsselt Tagebuchdaten im Browser mit AES-GCM. Supabase erhält nur den verschlüsselten Spielstand.
 
-Ein normaler Supabase-Passwort-Reset darf deshalb nicht einfach als Wiederherstellung des Tagebuchschlüssels behandelt werden. Vor einer produktiven Aktivierung muss die App einen ausdrücklich erklärten Wiederherstellungsmechanismus für den zufällig erzeugten Tagebuchschlüssel bereitstellen (z. B. einen vom Nutzer sicher verwahrten Wiederherstellungscode). Ohne diesen Schlüssel kann ein vergessenes Passwort zum dauerhaften Verlust des verschlüsselten Cloud-Tagebuchs führen.
+Bei neu angelegten Cloud-Spielständen wird ein zufälliger Tagebuchschlüssel erzeugt. Dieser Schlüssel wird doppelt verpackt:
+- einmal mit einem aus dem aktuellen Passwort abgeleiteten Schlüssel,
+- einmal mit einem aus einem zufälligen Wiederherstellungscode abgeleiteten Schlüssel.
+
+**Der Wiederherstellungscode wird bei der ersten Einrichtung einmalig angezeigt.** Nutzer müssen ihn sicher und getrennt vom Gerät aufbewahren. Bei einem Passwort-Reset über den E-Mail-Link fragt die App den Code ab, verpackt den Tagebuchschlüssel mit dem neuen Passwort und aktualisiert den verschlüsselten Datensatz. Ohne Passwort oder Wiederherstellungscode kann auch der Betreiber die Daten nicht entschlüsseln.
+
+Ältere Spielstände im Format v1 (Alpha 1.2) verwenden noch die direkte Passwortableitung und besitzen keinen Wiederherstellungscode. Ein Passwort-Reset kann diese alten verschlüsselten Daten nicht wiederherstellen. Solche Nutzer sollten sich vor einem Passwortwechsel anmelden und ein JSON-Backup exportieren; die Migration auf das neue Format muss in einer angemeldeten Sitzung erfolgen.
 
 ## 5. Bestehende Konten
+
+Die bisherige Alpha 1.2-Anmeldung erzeugte interne Adressen der Form `benutzername@mva.invalid`. Das sind keine echten E-Mail-Adressen. Diese Konten können nicht automatisch durch bloßes Ändern der Oberfläche in verifizierte E-Mail-Konten umgewandelt werden. Betroffene Nutzer benötigen ein neues E-Mail-Konto und sollten ihren bisherigen Spielstand vorher als JSON exportieren und nach der Anmeldung importieren.
+
+
 
 Die bisherige Alpha 1.2-Anmeldung erzeugte interne Adressen der Form `benutzername@mva.invalid`. Das sind keine echten E-Mail-Adressen. Diese Konten können nicht automatisch durch bloßes Ändern der Oberfläche in verifizierte E-Mail-Konten umgewandelt werden.
 
