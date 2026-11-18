@@ -41,3 +41,9 @@
 @media(max-width:380px){
   .more-grid{grid-template-columns:1fr}
 }
+
+
+/* DHV-Unterstützung am Seitenende */
+.support-footer{margin:42px auto 8px;padding:24px 12px 10px;border-top:1px solid var(--line);text-align:center;}
+.support-footer p{margin:0 0 13px;color:var(--muted);font-size:12px;font-weight:700;}
+.support-footer img{display:block;width:min(230px,72vw);height:auto;max-height:100px;object-fit:contain;margin:0 auto;}
