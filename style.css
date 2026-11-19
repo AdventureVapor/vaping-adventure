@@ -62,3 +62,19 @@
 .help-topic p{font-size:11px;line-height:1.55;color:var(--muted);margin:0}
 .help-topic[hidden]{display:none}
 @media(max-width:650px){.help-trigger{padding:6px 11px 6px 7px}.help-trigger span{width:30px;height:30px}.help-list{grid-template-columns:1fr}.help-library{padding:18px}.help-library .modal-foot{flex-wrap:wrap}}
+
+
+/* Profilanzeige oben rechts */
+.profile-wrap{position:relative}
+.profile-trigger{width:38px;height:38px;border:0;border-radius:50%;display:grid;place-items:center;background:#e7eadf;color:var(--green);font:800 14px Manrope;box-shadow:0 2px 5px #00000008}
+.profile-trigger:hover,.profile-trigger[aria-expanded="true"]{background:#dce8d9;outline:2px solid #c8d9c8}
+.profile-menu{position:absolute;right:0;top:calc(100% + 12px);width:min(290px,calc(100vw - 30px));z-index:12;background:#fff;border:1px solid var(--line);border-radius:14px;padding:17px;box-shadow:0 16px 45px #263b3026}
+.profile-menu[hidden]{display:none}
+.profile-menu .profile-title{font:700 14px Manrope;margin:0 0 12px}
+.profile-menu .profile-name{font-weight:700;font-size:13px;overflow-wrap:anywhere}
+.profile-menu .profile-email{font-size:11px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}
+.profile-menu .profile-state{display:flex;align-items:center;gap:7px;margin:13px 0;padding:10px;border-radius:9px;background:#eff3e9;color:var(--green);font-size:11px}
+.profile-menu .profile-state i{width:7px;height:7px;border-radius:50%;background:#69a579;flex:none}
+.profile-menu .profile-actions{display:grid;gap:7px}
+.profile-menu .profile-actions button{width:100%;text-align:left}
+@media(max-width:650px){.profile-trigger{width:36px;height:36px}.topright{gap:8px}.local{max-width:31vw;font-size:9px}}
