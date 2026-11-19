@@ -27,6 +27,25 @@ async function cloudRead(){let rows=await cloudFetch(`/rest/v1/mva_saves?select=
 async function cloudWrite(){if(!cloudSession||!cloudKey)return;let payload=await encryptCloud(db);await cloudFetch('/rest/v1/mva_saves?on_conflict=user_id',{method:'POST',headers:{Authorization:`Bearer ${cloudSession.token}`,Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:cloudSession.userId,payload,updated_at:new Date().toISOString()})});setCloudStatus('Cloud gespeichert')}
 function scheduleCloudSave(){if(!cloudSession||!cloudKey)return;setCloudStatus('Änderungen werden gespeichert …');clearTimeout(cloudTimer);cloudTimer=setTimeout(()=>{cloudSavePromise=cloudSavePromise.then(()=>cloudWrite()).catch(e=>{console.error(e);setCloudStatus('Cloud-Speicherung fehlgeschlagen');toast('Cloud-Speicherung fehlgeschlagen. Prüfe deine Verbindung und melde dich erneut an.')})},700)}
 function setCloudStatus(text){let el=$('#storage-status');if(el)el.innerHTML=`<i></i> ${esc(text)}`}
+function updateProfile(){
+ const trigger=$('#profile-trigger'),menu=$('#profile-menu'),initial=$('#profile-initial');
+ if(!trigger||!menu||!initial)return;
+ const active=!!cloudSession&&storageMode==='cloud';
+ const name=active?(cloudSession.username||'Dein Profil'):'Gastmodus';
+ const email=active?(cloudSession.email||''):'';
+ initial.textContent=active?String(name).trim().charAt(0).toUpperCase()||'P':'G';
+ trigger.setAttribute('aria-label',active?'Profil von '+name+' öffnen':'Profilmenü öffnen');
+ menu.innerHTML=active
+  ? `<h3 class="profile-title">Dein Profil</h3><div class="profile-name">${esc(name)}</div><div class="profile-email">${esc(email)}</div><div class="profile-state"><i></i> Verschlüsselte Cloud aktiv</div><div class="profile-actions"><button class="btn soft" data-profile-action="backup">Speicher & Backup öffnen →</button><button class="btn" data-profile-action="logout">Abmelden</button></div>`
+  : `<h3 class="profile-title">Dein Profil</h3><div class="profile-name">Gastmodus</div><div class="profile-email">Du bist aktuell nicht mit einem Cloud-Konto angemeldet.</div><div class="profile-state"><i></i> Nur auf diesem Gerät gespeichert</div><div class="profile-actions"><button class="btn primary" data-profile-action="backup">Cloud-Konto verbinden →</button></div>`;
+}
+async function logoutProfile(){
+ if(storageMode==='cloud'){await switchLocal();if(storageMode==='cloud')return}
+ cloudSession=null;cloudKey=null;cloudSalt=null;cloudPassword='';
+ const menu=$('#profile-menu'),trigger=$('#profile-trigger');if(menu)menu.hidden=true;if(trigger)trigger.setAttribute('aria-expanded','false');
+ updateNav();toast('Du wurdest abgemeldet.');
+}
+
 async function cloudLogin(signup){
  let identifier=$('#cloud-login')?.value.trim()||'',encryptionPassword=$('#cloud-enc-pass')?.value||'',username=$('#cloud-new-user')?.value.trim()||'',email=$('#cloud-email')?.value.trim()||'',password=$('#cloud-pass')?.value||'';
  if(signup){if(!/^[a-zA-Z0-9_.-]{3,32}$/.test(username))return toast('Benutzername: 3–32 Zeichen, Buchstaben, Zahlen, Punkt, _ oder -');if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))return toast('Bitte eine gültige E-Mail-Adresse eingeben.')}
@@ -83,9 +102,16 @@ async function cloudResetPassword(){let email=$('#cloud-reset-email')?.value.tri
 async function cloudChangeEmail(){if(!cloudSession)return toast('Bitte zuerst anmelden.');let email=$('#cloud-change-email')?.value.trim().toLowerCase();if(!email||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))return toast('Bitte eine gültige E-Mail-Adresse eingeben.');try{let r=await cloudFetch('/auth/v1/user',{method:'PUT',headers:{Authorization:`Bearer ${cloudSession.token}`},body:JSON.stringify({email,data:{username:cloudSession.username}})});toast('Bestätigungslink wurde angefordert. Bitte prüfe dein E-Mail-Postfach und bestätige die neue Adresse.');if(r.user?.email)cloudSession.pendingEmail=email}catch(e){toast(e.message||'E-Mail-Adresse konnte nicht geändert werden.')}}
 function emptyDb(){return {entries:[],devices:defaults.map(x=>({...x})),strains:[],photos:[],game:{xp:0,coins:0,quests:[],courses:{}}}}
 async function switchLocal(){if(storageMode==='local')return;const button=document.querySelector('[data-action="switch-local"]');if(button){button.disabled=true;button.textContent='Cloud wird gesichert …'}clearTimeout(cloudTimer);try{if(cloudSession&&cloudKey){await cloudSavePromise;await cloudWrite()}storageMode='local';db=localDb;cloudSession=null;cloudKey=null;cloudSalt=null;cloudPassword='';setCloudStatus('Nur auf diesem Gerät');render();toast('Cloud-Spielstand gesichert. Lokaler Spielstand aktiviert')}catch(e){console.error(e);if(button){button.disabled=false;button.textContent='Zu lokalem Spielstand wechseln'}toast('Wechsel abgebrochen: Cloud-Sicherung fehlgeschlagen. Du bleibst mit der Cloud verbunden.')}}
-function updateNav(){document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===page));document.querySelector('#diary-count').textContent=db.entries.length;setCloudStatus(storageMode==='cloud'?`Verschlüsselte Cloud · ${cloudSession?.username||''}`:'Nur auf diesem Gerät')}
+function updateNav(){document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===page));document.querySelector('#diary-count').textContent=db.entries.length;setCloudStatus(storageMode==='cloud'?`Verschlüsselte Cloud · ${cloudSession?.username||''}`:'Nur auf diesem Gerät');updateProfile()}
 function go(p){page=p;updateNav();render();window.scrollTo(0,0)}
 document.addEventListener('click',e=>{let n=e.target.closest('[data-page]');if(n){e.preventDefault();go(n.dataset.page)}});
+document.addEventListener('click',e=>{
+ const trigger=e.target.closest('#profile-trigger'),menu=$('#profile-menu');
+ if(trigger){if(menu){menu.hidden=!menu.hidden;trigger.setAttribute('aria-expanded',String(!menu.hidden))}return}
+ const action=e.target.closest('[data-profile-action]');
+ if(action){e.preventDefault();if(action.dataset.profileAction==='backup'){if(menu)menu.hidden=true;go('backup')}else if(action.dataset.profileAction==='logout')logoutProfile();return}
+ if(menu&&!e.target.closest('#profile-menu')){menu.hidden=true;$('#profile-trigger')?.setAttribute('aria-expanded','false')}
+});
 const header=(eyebrow,title,sub,action='')=>`<div class="row mobile-stack"><div><div class="eyebrow">${eyebrow}</div><h1 class="heading">${title}</h1><p class="subheading">${sub}</p></div>${action}</div>`;
 const card=(label,value,note)=>`<div class="card"><div class="stat-label">${label}</div><div class="stat-value">${value}</div><div class="stat-caption">${note}</div></div>`;
 const empty=(title,desc,button)=>`<div class="card empty">✳<b>${title}</b>${desc}<div style="margin-top:12px">${button||''}</div></div>`;
