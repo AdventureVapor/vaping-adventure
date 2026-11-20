@@ -2,7 +2,7 @@
 const KEY="mva_alpha12", OLD={entries:"pvd_entries",devices:"pvd_devices",game:"pvd_game"};
 const get=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
 const localDb=get(KEY,{entries:get(OLD.entries,[]),devices:get(OLD.devices,[]),strains:[],photos:[],game:get(OLD.game,{xp:0,coins:0,quests:[],courses:{}})});
-let db=localDb, storageMode="local", cloudSession=null, cloudKey=null, cloudSalt=null, cloudTimer=null, cloudSavePromise=Promise.resolve();
+let db=localDb, storageMode="local", cloudSession=null, cloudKey=null, cloudSalt=null, cloudEnvelope=null, cloudTimer=null, cloudSavePromise=Promise.resolve();
 const put=()=>{if(storageMode==="local"){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){toast("Speicher fast voll. Exportiere ein Backup und verkleinere Fotos.")}}else scheduleCloudSave()};
 for(const k of ["entries","devices","strains","photos"])if(!Array.isArray(db[k]))db[k]=[];
 db.game ||= {xp:0,coins:0,quests:[],courses:{}}; db.game.quests ||= []; db.game.courses ||= {};
@@ -18,8 +18,24 @@ function cloudReady(){let c=cloudConfig();return /^https:\/\//.test(c.url||'')&&
 function b64(bytes){const a=new Uint8Array(bytes);let binary='';const chunk=0x8000;for(let i=0;i<a.length;i+=chunk)binary+=String.fromCharCode(...a.subarray(i,i+chunk));return btoa(binary)}
 function unb64(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}
 async function deriveCloudKey(password,salt){let material=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:600000,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
-async function encryptCloud(data){let iv=crypto.getRandomValues(new Uint8Array(12)),bytes=new TextEncoder().encode(JSON.stringify(data)),cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},cloudKey,bytes);return {v:1,salt:b64(cloudSalt),iv:b64(iv),ciphertext:b64(cipher)}}
-async function decryptCloud(box){if(box?.v!==1)throw Error('Unbekanntes Cloud-Backup-Format');cloudSalt=unb64(box.salt);cloudKey=await deriveCloudKey(cloudPassword,cloudSalt);let plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(box.iv)},cloudKey,unb64(box.ciphertext));return JSON.parse(new TextDecoder().decode(plain))}
+async function aesWrap(key,bytes){let iv=crypto.getRandomValues(new Uint8Array(12)),cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,bytes);return {iv:b64(iv),ciphertext:b64(cipher)}}
+async function aesUnwrap(key,box){return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(box.iv)},key,unb64(box.ciphertext)))}
+async function encryptCloud(data){if(!cloudKey)throw Error('Verschlüsselungsschlüssel fehlt');let iv=crypto.getRandomValues(new Uint8Array(12)),bytes=new TextEncoder().encode(JSON.stringify(data)),cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},cloudKey,bytes);return cloudEnvelope?{v:2,envelope:cloudEnvelope,iv:b64(iv),ciphertext:b64(cipher)}:{v:1,salt:b64(cloudSalt),iv:b64(iv),ciphertext:b64(cipher)}}
+async function decryptCloud(box){
+ if(box?.v===2&&box.envelope?.v===1){let env=box.envelope,kek=await deriveCloudKey(cloudPassword,unb64(env.password.salt)),raw=await aesUnwrap(kek,env.password);cloudKey=await crypto.subtle.importKey('raw',raw,{name:'AES-GCM'},false,['encrypt','decrypt']);cloudEnvelope=env;let plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(box.iv)},cloudKey,unb64(box.ciphertext));return JSON.parse(new TextDecoder().decode(plain))}
+ if(box?.v!==1)throw Error('Unbekanntes Cloud-Backup-Format');
+ cloudSalt=unb64(box.salt);cloudKey=await deriveCloudKey(cloudPassword,cloudSalt);cloudEnvelope=null;
+ let plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(box.iv)},cloudKey,unb64(box.ciphertext));return JSON.parse(new TextDecoder().decode(plain))
+}
+async function createCloudEnvelope(password){
+ let raw=crypto.getRandomValues(new Uint8Array(32)),dek=await crypto.subtle.importKey('raw',raw,{name:'AES-GCM'},false,['encrypt','decrypt']);
+ let ps=crypto.getRandomValues(new Uint8Array(16)),pk=await deriveCloudKey(password,ps),pw=await aesWrap(pk,raw);
+ let recovery=Array.from(crypto.getRandomValues(new Uint8Array(24)),x=>x.toString(16).padStart(2,'0')).join('');
+ let rs=crypto.getRandomValues(new Uint8Array(16)),rk=await deriveCloudKey(recovery,rs),rw=await aesWrap(rk,raw);
+ cloudKey=dek;cloudSalt=null;cloudEnvelope={v:1,password:{salt:b64(ps),...pw},recovery:{salt:b64(rs),...rw}};
+ return recovery
+}
+function showRecoveryCode(code){alert('Dein persönlicher Vaping-Adventure-Wiederherstellungscode lautet:\n\n'+code+'\n\nBewahre ihn sicher und getrennt von deinem Gerät auf. Er wird nur einmal angezeigt. Ohne diesen Code kann ein Passwort-Reset den verschlüsselten Spielstand nicht wiederherstellen.');}
 let cloudPassword='';
 async function cloudFetch(path,options={},retry=true){let c=cloudConfig(),res=await fetch(`${c.url.replace(/\/$/,'')}${path}`,{...options,headers:{apikey:c.apiKey,'Content-Type':'application/json',...(options.headers||{})}});if(res.status===401&&retry&&cloudSession?.refreshToken&&!path.startsWith('/auth/')){let rr=await fetch(`${c.url.replace(/\/$/,'')}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:{apikey:c.apiKey,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:cloudSession.refreshToken})}),rd=await rr.json().catch(()=>({}));if(rr.ok){cloudSession.token=rd.access_token;cloudSession.refreshToken=rd.refresh_token;let headers={...(options.headers||{}),Authorization:`Bearer ${cloudSession.token}`};return cloudFetch(path,{...options,headers},false)}}let body=await res.text(),data=body?JSON.parse(body):null;if(!res.ok)throw Error(data?.msg||data?.message||data?.error_description||data?.hint||`Cloud-Fehler (${res.status})`);return data}
 async function cloudAuth(identifier,password,signup,email,username){if(!cloudReady())throw Error('Cloud ist noch nicht eingerichtet.');let base=cloudConfig().url.replace(/\/$/,'');if(signup){let r=await fetch(`${base}/auth/v1/signup?redirect_to=${encodeURIComponent(location.origin+location.pathname)}`,{method:'POST',headers:{apikey:cloudConfig().apiKey,'Content-Type':'application/json'},body:JSON.stringify({email:email.trim().toLowerCase(),password,data:{username:username.trim()}})});let d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.msg||d.message||d.error_description||'Registrierung fehlgeschlagen');return d.session?{token:d.session.access_token,refreshToken:d.session.refresh_token,userId:d.user.id,username:username.trim(),email:email.trim().toLowerCase()}:{confirmationRequired:true,email:email.trim().toLowerCase(),username:username.trim()}}let loginEmail=identifier.includes('@')?identifier.trim().toLowerCase():`${identifier.trim().toLowerCase()}@mva.invalid`;let d=await cloudFetch('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:loginEmail,password})});return {token:d.access_token,refreshToken:d.refresh_token,userId:d.user.id,username:d.user.user_metadata?.username||identifier.trim(),email:d.user.email}}
@@ -41,7 +57,7 @@ function updateProfile(){
 }
 async function logoutProfile(){
  if(storageMode==='cloud'){await switchLocal();if(storageMode==='cloud')return}
- cloudSession=null;cloudKey=null;cloudSalt=null;cloudPassword='';
+ cloudSession=null;cloudKey=null;cloudSalt=null;cloudEnvelope=null;cloudPassword='';
  const menu=$('#profile-menu'),trigger=$('#profile-trigger');if(menu)menu.hidden=true;if(trigger)trigger.setAttribute('aria-expanded','false');
  updateNav();toast('Du wurdest abgemeldet.');
 }
@@ -61,7 +77,7 @@ async function cloudLogin(signup){
   }else cloudSession=auth;
   let box=await cloudRead();
   if(box){
-   let cloudData=await decryptCloud(box);
+   let cloudData=await decryptCloud(box),needsRecoverySetup=box?.v===1,encryptionSecret=cloudPassword;
    openModal('Spielstand auswählen',`
     <p class="subheading">In deinem Cloud-Konto ist bereits ein Spielstand gespeichert. Entscheide, welche Daten künftig auf allen Geräten verwendet werden sollen.</p>
     <label class="card" style="display:block;margin:12px 0;cursor:pointer"><input type="radio" name="cloud-choice" value="local" style="width:auto;margin-right:8px"> <b>Lokalen Spielstand hochladen</b><div class="tagline" style="margin:7px 0 0">${db.entries.length} Einträge · ${db.devices.length} Geräte · ${db.strains.length} Sorten · ${db.photos.length} Fotos</div><p class="tagline">Ersetzt den bisherigen Cloud-Spielstand mit den Daten dieses Browsers.</p></label>
@@ -72,27 +88,31 @@ async function cloudLogin(signup){
     if(choice==='local'){
      if(!confirm('Wirklich den lokalen Spielstand hochladen und den bisherigen Cloud-Spielstand ersetzen?'))return;
      try{
+      let recoveryCode=needsRecoverySetup?await createCloudEnvelope(encryptionSecret):null;
       await cloudWrite();
       storageMode='cloud';setCloudStatus('Verschlüsselte Cloud · '+cloudSession.username);
+      if(recoveryCode)showRecoveryCode(recoveryCode);
       $('#modal-root').innerHTML='';render();toast('Lokaler Spielstand sicher in die Cloud übertragen');
      }catch(error){setCloudStatus('Cloud-Übertragung fehlgeschlagen');toast(error.message||'Upload fehlgeschlagen. Deine lokalen Daten bleiben erhalten.');}
     }else{
-     db=cloudData;storageMode='cloud';setCloudStatus('Verschlüsselte Cloud · '+cloudSession.username);
-     $('#modal-root').innerHTML='';render();toast('Cloud-Spielstand geladen');
+     db=cloudData;
+     let recoveryCode=needsRecoverySetup?await createCloudEnvelope(encryptionSecret):null;
+     storageMode='cloud';if(recoveryCode)await cloudWrite();
+     setCloudStatus('Verschlüsselte Cloud · '+cloudSession.username);
+     $('#modal-root').innerHTML='';render();if(recoveryCode)showRecoveryCode(recoveryCode);toast('Cloud-Spielstand geladen');
     }
    });
   }else{
-   cloudSalt=crypto.getRandomValues(new Uint8Array(16));
-   cloudKey=await deriveCloudKey(password,cloudSalt);
+   let recoveryCode=await createCloudEnvelope(cloudPassword);
    if(!confirm(`Dein Cloud-Konto ist noch leer. Soll der lokale Spielstand jetzt verschlüsselt hochgeladen werden?\\n\\n${db.entries.length} Einträge · ${db.devices.length} Geräte · ${db.strains.length} Sorten · ${db.photos.length} Fotos`)){
-    cloudSession=null;cloudKey=null;cloudSalt=null;cloudPassword='';storageMode='local';db=localDb;render();return;
+    cloudSession=null;cloudKey=null;cloudSalt=null;cloudEnvelope=null;cloudPassword='';storageMode='local';db=localDb;render();return;
    }
-   storageMode='cloud';await cloudWrite();render();toast('Lokaler Spielstand sicher in die Cloud übertragen');
+   storageMode='cloud';await cloudWrite();render();showRecoveryCode(recoveryCode);toast('Lokaler Spielstand sicher in die Cloud übertragen');
   }
   if($('#cloud-pass'))$('#cloud-pass').value='';
   if($('#cloud-enc-pass'))$('#cloud-enc-pass').value='';
  }catch(e){
-  console.error(e);cloudSession=null;cloudKey=null;cloudSalt=null;cloudPassword='';storageMode='local';db=localDb;setCloudStatus('Nur auf diesem Gerät');toast(e.message||'Cloud-Verbindung fehlgeschlagen')
+  console.error(e);cloudSession=null;cloudKey=null;cloudSalt=null;cloudEnvelope=null;cloudPassword='';storageMode='local';db=localDb;setCloudStatus('Nur auf diesem Gerät');toast(e.message||'Cloud-Verbindung fehlgeschlagen')
  }finally{
   cloudPassword='';
   if($('#cloud-connect')){$('#cloud-connect').disabled=false;$('#cloud-connect').textContent='Verbinden'}
@@ -101,7 +121,7 @@ async function cloudLogin(signup){
 async function cloudResetPassword(){let email=$('#cloud-reset-email')?.value.trim().toLowerCase();if(!email||!email.includes('@'))return toast('Bitte deine registrierte E-Mail-Adresse eingeben.');try{let c=cloudConfig(),r=await fetch(`${c.url.replace(/\/$/,'')}/auth/v1/recover?redirect_to=${encodeURIComponent(location.origin+location.pathname)}`,{method:'POST',headers:{apikey:c.apiKey,'Content-Type':'application/json'},body:JSON.stringify({email})});let d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.msg||d.message||'Wiederherstellungs-E-Mail konnte nicht gesendet werden.');toast('Falls das Konto existiert, wurde eine Wiederherstellungs-E-Mail versendet.')}catch(e){toast(e.message||'E-Mail-Versand fehlgeschlagen')}}
 async function cloudChangeEmail(){if(!cloudSession)return toast('Bitte zuerst anmelden.');let email=$('#cloud-change-email')?.value.trim().toLowerCase();if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return toast('Bitte eine gültige E-Mail-Adresse eingeben.');try{let redirectTo=window.location.origin+window.location.pathname;let r=await cloudFetch('/auth/v1/user?redirect_to='+encodeURIComponent(redirectTo),{method:'PUT',headers:{Authorization:`Bearer ${cloudSession.token}`},body:JSON.stringify({email,data:{username:cloudSession.username}})});toast('Bestätigungslink wurde angefordert. Bitte prüfe dein E-Mail-Postfach und bestätige die neue Adresse.');if(r.user?.email)cloudSession.pendingEmail=email}catch(e){toast(e.message||'E-Mail-Adresse konnte nicht geändert werden.')}}
 function emptyDb(){return {entries:[],devices:defaults.map(x=>({...x})),strains:[],photos:[],game:{xp:0,coins:0,quests:[],courses:{}}}}
-async function switchLocal(){if(storageMode==='local')return;const button=document.querySelector('[data-action="switch-local"]');if(button){button.disabled=true;button.textContent='Cloud wird gesichert …'}clearTimeout(cloudTimer);try{if(cloudSession&&cloudKey){await cloudSavePromise;await cloudWrite()}storageMode='local';db=localDb;cloudSession=null;cloudKey=null;cloudSalt=null;cloudPassword='';setCloudStatus('Nur auf diesem Gerät');render();toast('Cloud-Spielstand gesichert. Lokaler Spielstand aktiviert')}catch(e){console.error(e);if(button){button.disabled=false;button.textContent='Zu lokalem Spielstand wechseln'}toast('Wechsel abgebrochen: Cloud-Sicherung fehlgeschlagen. Du bleibst mit der Cloud verbunden.')}}
+async function switchLocal(){if(storageMode==='local')return;const button=document.querySelector('[data-action="switch-local"]');if(button){button.disabled=true;button.textContent='Cloud wird gesichert …'}clearTimeout(cloudTimer);try{if(cloudSession&&cloudKey){await cloudSavePromise;await cloudWrite()}storageMode='local';db=localDb;cloudSession=null;cloudKey=null;cloudSalt=null;cloudEnvelope=null;cloudPassword='';setCloudStatus('Nur auf diesem Gerät');render();toast('Cloud-Spielstand gesichert. Lokaler Spielstand aktiviert')}catch(e){console.error(e);if(button){button.disabled=false;button.textContent='Zu lokalem Spielstand wechseln'}toast('Wechsel abgebrochen: Cloud-Sicherung fehlgeschlagen. Du bleibst mit der Cloud verbunden.')}}
 function updateNav(){document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===page));document.querySelector('#diary-count').textContent=db.entries.length;setCloudStatus(storageMode==='cloud'?`Verschlüsselte Cloud · ${cloudSession?.username||''}`:'Nur auf diesem Gerät');updateProfile()}
 function go(p){page=p;updateNav();render();window.scrollTo(0,0)}
 document.addEventListener('click',e=>{let n=e.target.closest('[data-page]');if(n){e.preventDefault();go(n.dataset.page)}});
@@ -145,7 +165,30 @@ function importJson(e){let f=e.target.files[0];if(!f)return;let r=new FileReader
 function parseCsv(t){let delim=(t.split(/\r?\n/)[0].match(/;/g)||[]).length>=(t.split(/\r?\n/)[0].match(/,/g)||[]).length?';':',',rows=[],r=[],s='',q=false;t=t.replace(/^\uFEFF/,'');for(let i=0;i<t.length;i++){let c=t[i];if(c==='"'&&q&&t[i+1]==='"'){s+='"';i++}else if(c==='"')q=!q;else if(c===delim&&!q){r.push(s);s=''}else if((c==='\n'||c==='\r')&&!q){if(c==='\r'&&t[i+1]==='\n')i++;r.push(s);s='';if(r.some(x=>x.trim()))rows.push(r);r=[]}else s+=c}r.push(s);if(r.some(x=>x.trim()))rows.push(r);return rows}
 function importCsv(e){let f=e.target.files[0];if(!f)return;f.text().then(t=>{let rows=parseCsv(t),h=rows.shift().map(x=>x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z]/g,''));csvPending=rows.map(r=>{let o={};h.forEach((k,i)=>o[k]=r[i]||'');let pick=(...keys)=>keys.map(k=>o[k]).find(Boolean)||'';let notes=pick('notizen','notes','bemerkungen'),puffs=pick('puffs','zuege','anzahlzuege')||((notes.match(/(?:züge|zuege|puffs?)\s*[:=]?\s*(\d+)/i)||[])[1]||'');return {id:id(),date:pick('datum','date'),time:pick('uhrzeit','zeit','time'),category:pick('kategorie','category')||'vaporizer',device:pick('geraet','device'),strain:pick('sorte','strain','material'),duration:pick('dauer','duration'),puffs,notes,temp:pick('temperatur','temp'),location:pick('ort','location'),taste:pick('geschmack','taste')}}).filter(x=>x.device||x.date||x.notes);let dup=x=>db.entries.some(y=>x.date===y.date&&x.time===y.time&&x.device.toLowerCase()===String(y.device).toLowerCase());$('#csv-preview').innerHTML=`<p class="subheading">${csvPending.length} erkannt · ${csvPending.filter(x=>!dup(x)).length} neu · ${csvPending.filter(dup).length} mögliche Duplikate. ${csvPending.slice(0,10).map(x=>`<br>${esc(x.date)} · ${esc(x.device)} ${dup(x)?'· Duplikat':''}`).join('')}</p><button class="btn primary" id="csv-commit" ${csvPending.filter(x=>!dup(x)).length?'':'disabled'}>Neue Einträge übernehmen</button>`;$('#csv-commit').onclick=()=>{csvPending.filter(x=>!dup(x)).forEach(x=>{db.entries.push(x);if(!db.devices.some(d=>d.name.toLowerCase()===x.device.toLowerCase()))db.devices.push({name:x.device,category:x.category})});put();render();toast('CSV importiert')}}).catch(()=>toast('CSV konnte nicht gelesen werden'))}
 function bindGlobal(){document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>{switch(b.dataset.action){case'new':entryForm();break;case'new-strain':strainForm();break;case'new-device':deviceForm();break;case'new-photo':photoForm();break;case'export-json':jsonExport();break;case'export-csv':csvExport();break;case'import-json':$('#json-file').click();break;case'cloud-login':cloudLogin(false);break;case'cloud-signup':cloudLogin(true);break;case'cloud-reset':cloudResetPassword();break;case'cloud-change-email':cloudChangeEmail();break;case'switch-local':switchLocal();break}});document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>entryForm(db.entries.find(x=>x.id===b.dataset.edit)));document.querySelectorAll('[data-delete-entry]').forEach(b=>b.onclick=()=>{if(confirm('Eintrag löschen?')){db.entries=db.entries.filter(x=>x.id!==b.dataset.deleteEntry);put();render()}});document.querySelectorAll('[data-edit-strain]').forEach(b=>b.onclick=()=>strainForm(db.strains.find(x=>x.id===b.dataset.editStrain)));document.querySelectorAll('[data-del-strain]').forEach(b=>b.onclick=()=>{db.strains=db.strains.filter(x=>x.id!==b.dataset.delStrain);put();render()});document.querySelectorAll('[data-edit-device]').forEach(b=>b.onclick=()=>deviceForm(db.devices.find(x=>x.name===b.dataset.editDevice)));document.querySelectorAll('[data-del-device]').forEach(b=>b.onclick=()=>{if(db.entries.some(x=>x.device===b.dataset.delDevice))return toast('Gerät wird noch verwendet');db.devices=db.devices.filter(x=>x.name!==b.dataset.delDevice);put();render()});document.querySelectorAll('[data-del-photo]').forEach(b=>b.onclick=()=>{db.photos=db.photos.filter(x=>x.id!==b.dataset.delPhoto);put();render()});document.querySelectorAll('[data-course]').forEach(b=>b.onclick=()=>courseView(courses.find(c=>c.id===b.dataset.course)));document.querySelectorAll('[data-claim]').forEach(b=>b.onclick=()=>{let q=questData.find(q=>q.id===b.dataset.claim);if(!q||db.game.quests.includes(q.id)||!q.check())return;db.game.quests.push(q.id);db.game.xp=(db.game.xp||0)+q.xp;db.game.coins=(db.game.coins||0)+q.coins;put();render()})}
-async function handlePasswordRecovery(){const params=new URLSearchParams(location.hash.slice(1));if(params.get('type')!=='recovery'||!params.get('access_token'))return;const token=params.get('access_token');const next=prompt('Neues Login-Passwort eingeben (mindestens 8 Zeichen):');if(!next||next.length<8){toast('Passwortänderung abgebrochen. Öffne den Wiederherstellungslink erneut.');return}try{const c=cloudConfig();const base=c.url.endsWith('/')?c.url.slice(0,-1):c.url;const r=await fetch(base+'/auth/v1/user',{method:'PUT',headers:{apikey:c.apiKey,'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({password:next})});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.msg||d.message||'Passwort konnte nicht geändert werden.');history.replaceState(null,'',location.pathname+location.search);toast('Login-Passwort geändert. Melde dich mit E-Mail und neuem Passwort an. Für bereits verschlüsselte Cloud-Daten brauchst du weiterhin dein bisheriges Verschlüsselungskennwort.')}catch(e){toast(e.message||'Passwortänderung fehlgeschlagen')}}
+async function handlePasswordRecovery(){
+ const params=new URLSearchParams(location.hash.slice(1));if(params.get('type')!=='recovery'||!params.get('access_token'))return;
+ const token=params.get('access_token'),recovery=prompt('Bitte gib deinen persönlichen Vaping-Adventure-Wiederherstellungscode ein.');
+ if(!recovery)return toast('Wiederherstellung abgebrochen.');
+ const next=prompt('Bitte lege dein neues Login-Passwort fest (mindestens 8 Zeichen).');
+ if(!next||next.length<8)return toast('Das neue Passwort muss mindestens 8 Zeichen haben.');
+ try{
+  const c=cloudConfig(),base=c.url.replace(/\/$/,'');
+  const headers={apikey:c.apiKey,'Content-Type':'application/json',Authorization:'Bearer '+token};
+  const read=await fetch(base+'/rest/v1/mva_saves?select=payload&limit=1',{headers});
+  const rows=await read.json().catch(()=>[]);if(!read.ok)throw Error('Cloud-Spielstand konnte nicht gelesen werden.');
+  const box=rows?.[0]?.payload;if(!box||box.v!==2||box.envelope?.v!==1)throw Error('Für diesen Cloud-Spielstand ist kein Wiederherstellungscode eingerichtet. Ein älteres Backup (Format 1) kann damit nicht wiederhergestellt werden.');
+  const env=box.envelope,rk=await deriveCloudKey(recovery,unb64(env.recovery.salt)),raw=await aesUnwrap(rk,env.recovery);
+  const ps=crypto.getRandomValues(new Uint8Array(16)),pk=await deriveCloudKey(next,ps),pw=await aesWrap(pk,raw);
+  const update=await fetch(base+'/auth/v1/user',{method:'PUT',headers,body:JSON.stringify({password:next})});
+  const ud=await update.json().catch(()=>({}));if(!update.ok)throw Error(ud.msg||ud.message||'Neues Passwort konnte nicht gespeichert werden.');
+  env.password={salt:b64(ps),...pw};
+  const user=await fetch(base+'/auth/v1/user',{headers}),userData=await user.json().catch(()=>({}));
+  if(!user.ok||!userData.id)throw Error('Konto konnte nach dem Passwortwechsel nicht bestätigt werden.');
+  const write=await fetch(base+'/rest/v1/mva_saves?on_conflict=user_id',{method:'POST',headers:{...headers,Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:userData.id,payload:box,updated_at:new Date().toISOString()})});
+  if(!write.ok)throw Error('Der neue Verschlüsselungsschlüssel konnte nicht gespeichert werden. Bitte melde dich beim Support.');
+  history.replaceState(null,'',location.pathname+location.search);toast('Passwort und Verschlüsselung wurden aktualisiert. Du kannst dich jetzt mit dem neuen Passwort anmelden.');
+ }catch(e){console.error(e);toast(e.message||'Wiederherstellung fehlgeschlagen. Prüfe den Code und versuche es erneut.')}
+}
 function newBoot(){db.entries=db.entries.map(e=>{let m=String(e.notes||'').match(/(?:anzahl\s*)?(?:züge|zuege|puffs?)\s*[:=]?\s*(\d+)/i);if(!e.puffs&&m)e.puffs=m[1];return e});put();render()}
 handlePasswordRecovery();
 newBoot();
