@@ -63,17 +63,18 @@ Diese Roadmap hält fest, was bereits vorhanden ist und welche Arbeiten bis zur 
 - [ ] Alpha-Tests abschließen
 - [ ] Version 1.3 zur Veröffentlichung freigeben
 
-## Geplant: Deutsch und Englisch
+## Deutsch und Englisch – umgesetzt
 
-Die zweisprachige Oberfläche soll ebenfalls Teil der Version 1.3 werden.
+- [x] Sprachumschalter oben rechts integrieren (🇩🇪 Deutsch / 🇬🇧 English)
+- [x] Deutsch als Standardsprache beim ersten Besuch einstellen
+- [x] Englische Übersetzungen für Menüs, Schaltflächen, Hinweise und viele Fehlermeldungen ergänzen
+- [x] Hilfebereich und fest eingebaute Texte übersetzen
+- [x] Gewählte Sprache dauerhaft im Browser speichern
+- [x] Tagebuch-Einträge und andere persönliche Inhalte unverändert lassen
+- [x] Sprachwechsel in der Vorschau auf den wichtigsten Bereichen prüfen
+- [x] Sprachfunktion in den Produktionszweig `main` übernehmen
 
-- [ ] Sprachumschalter oben rechts integrieren (🇩🇪 Deutsch / 🇬🇧 English)
-- [ ] Deutsch als Standardsprache beim ersten Besuch einstellen
-- [ ] Englische Übersetzungen für Menüs, Schaltflächen, Hinweise und Fehlermeldungen ergänzen
-- [ ] Hilfebereich und weitere fest eingebaute Texte übersetzen
-- [ ] Gewählte Sprache dauerhaft speichern
-- [ ] Tagebuch-Einträge und andere persönliche Inhalte unverändert lassen
-- [ ] Sprachwechsel in der gesamten Anwendung testen
+> Hinweis: Die Sprachfunktion wurde in der Vorschau geprüft und anschließend in `main` übernommen. Bei weiteren Tests gefundene fehlende Übersetzungen werden laufend ergänzt. Persönliche Inhalte werden nicht übersetzt.
 
 ## Technischer Stand
 
