@@ -129,6 +129,7 @@ Die folgenden Funktionen aus dem aktuellen Produktionsstand wurden gezielt in Al
 - [x] Kontrastverbesserung für die Schaltfläche auf der Übersichtsseite
 - [x] E-Mail-Adresse im angemeldeten Cloud-Konto hinterlegen oder ändern
 - [x] Sprachumschalter und Übersetzungsdateien aus main
+- [x] DHV-Unterstützung am Seitenende mit Logo und Verlinkung
 
 ### Noch praktisch zu prüfen
 - [ ] Auswahlfenster mit einem Konto testen, das bereits einen Cloud-Spielstand besitzt
