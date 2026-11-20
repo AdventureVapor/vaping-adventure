@@ -110,7 +110,8 @@ Diese Roadmap hält fest, was bereits vorhanden ist und welche Arbeiten bis zur 
 - [x] Hilfe-Schaltfläche und Hilfe-Bibliothek eingebunden
 - [x] Zusätzliche Main-UI-Stile und mobile Darstellung übernommen
 - [x] Mehr-Bereich für Geräte, Galerie, Education und Speicher & Backup ergänzt
-- [ ] Weitere Main-Funktionsänderungen einzeln prüfen und konfliktfrei in Alpha übernehmen
+- [x] Main-Fotogalerie mit responsiver Großbildansicht und Tastatursteuerung übernehmen
+- [x] Main-Profilmenü und Hilfe-Bibliothek in der Alpha-Vorschau bereitstellen
 - [ ] Vorschau nach dem Deployment visuell und funktional prüfen
 
 **Sicherheitsregel:** Die Alpha-1.3-E-Mail-Anmeldung, PBKDF2/AES-GCM-Verschlüsselung, Wiederherstellungscodes und `mva_saves`-Cloudlogik bleiben maßgeblich. Die ältere Main-Cloud-Implementierung wird nicht übernommen.
