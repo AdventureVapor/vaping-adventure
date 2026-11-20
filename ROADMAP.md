@@ -82,8 +82,10 @@ Diese Roadmap hält fest, was bereits vorhanden ist und welche Arbeiten bis zur 
 - [x] Tagebuch-Einträge und andere persönliche Inhalte unverändert lassen
 - [x] Sprachwechsel in der Vorschau auf den wichtigsten Bereichen prüfen
 - [x] Sprachfunktion in den Produktionszweig `main` übernehmen
+- [x] Sprachfunktion mit dem neuen Alpha-1.3-Anmelde- und Verschlüsselungscode zusammenführen
+- [x] Zusammengeführten Alpha-1.3-Stand in der separaten GitHub-Pages-Vorschau bereitstellen
 
-> Hinweis: Die Sprachfunktion wurde in der Vorschau geprüft und anschließend in `main` übernommen. Bei weiteren Tests gefundene fehlende Übersetzungen werden laufend ergänzt. Persönliche Inhalte werden nicht übersetzt.
+> Hinweis: Deutsch/Englisch ist in `main` und im Alpha-1.3-Arbeitszweig integriert. Die separate Vorschau enthält den aktuellen Alpha-1.3-Code samt Sprachumschalter. Bei weiteren Tests gefundene fehlende Übersetzungen werden laufend ergänzt. Persönliche Inhalte werden nicht übersetzt.
 
 ## Version 1.4 – vorgemerkt
 
