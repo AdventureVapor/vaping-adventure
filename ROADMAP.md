@@ -115,3 +115,23 @@ Diese Roadmap hält fest, was bereits vorhanden ist und welche Arbeiten bis zur 
 - [ ] Vorschau nach dem Deployment visuell und funktional prüfen
 
 **Sicherheitsregel:** Die Alpha-1.3-E-Mail-Anmeldung, PBKDF2/AES-GCM-Verschlüsselung, Wiederherstellungscodes und `mva_saves`-Cloudlogik bleiben maßgeblich. Die ältere Main-Cloud-Implementierung wird nicht übernommen.
+
+
+## Abgleich mit dem Produktionsstand main – 20.11.2026
+
+Die folgenden Funktionen aus dem aktuellen Produktionsstand wurden gezielt in Alpha 1.3 übernommen. Die E-Mail-Anmeldung, Verschlüsselung und Wiederherstellung von Alpha bleiben dabei erhalten; der ältere Main-Anmeldecode wurde ausdrücklich nicht übernommen.
+
+- [x] Profilmenü oben rechts einschließlich Abmelden
+- [x] Hilfe-Bibliothek mit Suchfunktion
+- [x] Bereich „Mehr“ mit zusätzlichen Seiten
+- [x] Fotogalerie mit Großansicht, Vor-/Zurück-Navigation und Tastatursteuerung
+- [x] Auswahlfenster für lokalen oder vorhandenen Cloud-Spielstand
+- [x] Kontrastverbesserung für die Schaltfläche auf der Übersichtsseite
+- [x] E-Mail-Adresse im angemeldeten Cloud-Konto hinterlegen oder ändern
+- [x] Sprachumschalter und Übersetzungsdateien aus main
+
+### Noch praktisch zu prüfen
+- [ ] Auswahlfenster mit einem Konto testen, das bereits einen Cloud-Spielstand besitzt
+- [ ] E-Mail-Änderung mit Bestätigungslink vollständig testen
+- [ ] Galerie, Lightbox und Navigation nach der Übernahme durchtesten
+- [ ] Cloud-Synchronisierung und Kontentrennung mit zwei Konten testen
