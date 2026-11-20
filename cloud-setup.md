@@ -56,7 +56,9 @@ In Supabase unter **Authentication → Providers → Email**:
 
 Unter **Authentication → URL Configuration**:
 - Site URL auf die veröffentlichte GitHub-Pages-Adresse setzen.
-- Die exakte GitHub-Pages-Adresse zusätzlich als Redirect URL erlauben, einschließlich des Pfads, falls die Anwendung dort unter einem Unterpfad liegt.
+- Site URL: `https://adventurevapor.github.io/vaping-adventure/` (Produktion)
+- Redirect URLs: Produktionsadresse `https://adventurevapor.github.io/vaping-adventure/` und zusätzlich die Vorschau `https://adventurevapor.github.io/vaping-adventure-preview/` erlauben.
+- Die Vorschau-URL ist nur eine zusätzliche Redirect URL; die Site URL bleibt auf Produktion.
 
 Die Anwendung muss Bestätigungslinks wieder auf die App zurückführen können.
 
