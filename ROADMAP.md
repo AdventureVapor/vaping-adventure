@@ -103,3 +103,14 @@ Diese Roadmap hält fest, was bereits vorhanden ist und welche Arbeiten bis zur 
 ---
 
 *Die Roadmap wird während der Entwicklung laufend aktualisiert. Ein Häkchen bedeutet: umgesetzt und ausreichend geprüft – nicht nur geplant oder programmiert. Bei Sicherheitsregeln bedeutet die Prüfung der SQL-Definition noch nicht, dass die praktische Trennung mit zwei Testkonten bereits erfolgreich getestet wurde.*
+
+
+## Main-Neuerungen in Alpha 1.3 (20.11.2026)
+- [x] Profilmenü oben rechts mit Gast-/Cloud-Status und Navigation zu Speicher & Backup
+- [x] Hilfe-Schaltfläche und Hilfe-Bibliothek eingebunden
+- [x] Zusätzliche Main-UI-Stile und mobile Darstellung übernommen
+- [x] Mehr-Bereich für Geräte, Galerie, Education und Speicher & Backup ergänzt
+- [ ] Weitere Main-Funktionsänderungen einzeln prüfen und konfliktfrei in Alpha übernehmen
+- [ ] Vorschau nach dem Deployment visuell und funktional prüfen
+
+**Sicherheitsregel:** Die Alpha-1.3-E-Mail-Anmeldung, PBKDF2/AES-GCM-Verschlüsselung, Wiederherstellungscodes und `mva_saves`-Cloudlogik bleiben maßgeblich. Die ältere Main-Cloud-Implementierung wird nicht übernommen.
