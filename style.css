@@ -18,3 +18,10 @@
 @media(max-width:650px) {
   .mark { flex-basis: 34px; }
 }
+
+
+/* Deutsch-Englisch-Sprachumschalter */
+.language-switch{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:30px;min-width:78px;padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--green);font-size:9px;font-weight:700;white-space:nowrap}
+.language-switch:hover{background:#edf2e9}
+.language-flag{display:inline-block;width:20px;height:14px;min-width:20px;object-fit:cover;border:1px solid #9aa59b;border-radius:2px;flex:0 0 20px;visibility:visible;opacity:1}
+@media(max-width:650px){.language-switch{min-height:28px;min-width:72px;padding:4px 6px;font-size:8px;gap:5px}.language-flag{width:18px;height:12px;min-width:18px;flex-basis:18px}.topright{gap:7px}}
