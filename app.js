@@ -77,7 +77,7 @@ async function cloudLogin(signup){
   }else cloudSession=auth;
   let box=await cloudRead();
   if(box){
-   let cloudData=await decryptCloud(box),needsRecoverySetup=box?.v===1,encryptionSecret=cloudPassword;
+   let cloudData=await decryptCloud(box),needsRecoverySetup=box?.v===1,encryptionSecret=cloudPassword,localData=db;
    openModal('Spielstand auswählen',`
     <p class="subheading">In deinem Cloud-Konto ist bereits ein Spielstand gespeichert. Entscheide, welche Daten künftig auf allen Geräten verwendet werden sollen.</p>
     <label class="card" style="display:block;margin:12px 0;cursor:pointer"><input type="radio" name="cloud-choice" value="local" style="width:auto;margin-right:8px"> <b>Lokalen Spielstand hochladen</b><div class="tagline" style="margin:7px 0 0">${db.entries.length} Einträge · ${db.devices.length} Geräte · ${db.strains.length} Sorten · ${db.photos.length} Fotos</div><p class="tagline">Ersetzt den bisherigen Cloud-Spielstand mit den Daten dieses Browsers.</p></label>
@@ -96,10 +96,17 @@ async function cloudLogin(signup){
      }catch(error){setCloudStatus('Cloud-Übertragung fehlgeschlagen');toast(error.message||'Upload fehlgeschlagen. Deine lokalen Daten bleiben erhalten.');}
     }else{
      db=cloudData;
-     let recoveryCode=needsRecoverySetup?await createCloudEnvelope(encryptionSecret):null;
-     storageMode='cloud';if(recoveryCode)await cloudWrite();
-     setCloudStatus('Verschlüsselte Cloud · '+cloudSession.username);
-     $('#modal-root').innerHTML='';render();if(recoveryCode)showRecoveryCode(recoveryCode);toast('Cloud-Spielstand geladen');
+     try{
+      let recoveryCode=needsRecoverySetup?await createCloudEnvelope(encryptionSecret):null;
+      if(recoveryCode)await cloudWrite();
+      storageMode='cloud';
+      setCloudStatus('Verschlüsselte Cloud · '+cloudSession.username);
+      $('#modal-root').innerHTML='';render();if(recoveryCode)showRecoveryCode(recoveryCode);toast('Cloud-Spielstand geladen');
+     }catch(error){
+      db=localData;storageMode='local';cloudKey=null;cloudSalt=null;cloudEnvelope=null;
+      setCloudStatus('Nur auf diesem Gerät');
+      toast(error.message||'Die Cloud-Migration ist fehlgeschlagen. Deine lokalen Daten bleiben erhalten.');
+     }
     }
    });
   }else{
