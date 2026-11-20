@@ -29,7 +29,9 @@ Diese Roadmap hält fest, was bereits vorhanden ist und welche Arbeiten bis zur 
 - [ ] Anmeldung mit E-Mail-Adresse und Passwort
 - [x] E-Mail-Anbieter in Supabase aktiviert
 - [x] E-Mail-Bestätigung in Supabase aktiviert
-- [x] Site URL und Redirect URL auf die GitHub-Pages-Adresse gesetzt
+- [x] Site URL auf die Produktionsadresse gesetzt
+- [x] Produktionsadresse als Redirect URL eingetragen
+- [ ] Vorschau-Adresse zusätzlich als Redirect URL eintragen und bestätigen
 - [ ] E-Mail-Adresse mit einem echten Testkonto bestätigen
 - [ ] Passwort-Zurücksetzen per E-Mail praktisch testen
 - [ ] Verhalten bei ungültigen Eingaben und Authentifizierungsfehlern prüfen
@@ -99,7 +101,7 @@ Diese Roadmap hält fest, was bereits vorhanden ist und welche Arbeiten bis zur 
 - **Produktionszweig:** `main` (bleibt bis zur Freigabe unverändert)
 - **Entwicklungszweig:** `alpha-1.3-email-auth`  
 - **Release-Kandidat auf Basis von main:** `release-1.3-candidate`
-- **Status:** Supabase-Grundkonfiguration, Datenbanktabelle, Fremdschlüssel und RLS-Policies sind eingerichtet und anhand der SQL-Definitionen geprüft. Registrierung, E-Mail-Bestätigung, echte Cloud-Synchronisierung, Wiederherstellung und Kontentrennung müssen noch praktisch getestet werden.
+- **Status:** Der Release-Kandidat basiert direkt auf dem aktuellen `main`. Supabase-Grundkonfiguration, Tabelle, Fremdschlüssel und RLS-Policies sind eingerichtet und anhand der SQL-Definitionen geprüft. Die Browser- und Supabase-Abläufe sind noch nicht vollständig praktisch getestet.
 
 ---
 
