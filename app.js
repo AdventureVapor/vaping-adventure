@@ -167,10 +167,15 @@ function importCsv(e){let f=e.target.files[0];if(!f)return;f.text().then(t=>{let
 function bindGlobal(){document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>{switch(b.dataset.action){case'new':entryForm();break;case'new-strain':strainForm();break;case'new-device':deviceForm();break;case'new-photo':photoForm();break;case'export-json':jsonExport();break;case'export-csv':csvExport();break;case'import-json':$('#json-file').click();break;case'cloud-login':cloudLogin(false);break;case'cloud-signup':cloudLogin(true);break;case'cloud-reset':cloudResetPassword();break;case'cloud-change-email':cloudChangeEmail();break;case'switch-local':switchLocal();break}});document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>entryForm(db.entries.find(x=>x.id===b.dataset.edit)));document.querySelectorAll('[data-delete-entry]').forEach(b=>b.onclick=()=>{if(confirm('Eintrag löschen?')){db.entries=db.entries.filter(x=>x.id!==b.dataset.deleteEntry);put();render()}});document.querySelectorAll('[data-edit-strain]').forEach(b=>b.onclick=()=>strainForm(db.strains.find(x=>x.id===b.dataset.editStrain)));document.querySelectorAll('[data-del-strain]').forEach(b=>b.onclick=()=>{db.strains=db.strains.filter(x=>x.id!==b.dataset.delStrain);put();render()});document.querySelectorAll('[data-edit-device]').forEach(b=>b.onclick=()=>deviceForm(db.devices.find(x=>x.name===b.dataset.editDevice)));document.querySelectorAll('[data-del-device]').forEach(b=>b.onclick=()=>{if(db.entries.some(x=>x.device===b.dataset.delDevice))return toast('Gerät wird noch verwendet');db.devices=db.devices.filter(x=>x.name!==b.dataset.delDevice);put();render()});document.querySelectorAll('[data-del-photo]').forEach(b=>b.onclick=()=>{db.photos=db.photos.filter(x=>x.id!==b.dataset.delPhoto);put();render()});document.querySelectorAll('[data-course]').forEach(b=>b.onclick=()=>courseView(courses.find(c=>c.id===b.dataset.course)));document.querySelectorAll('[data-claim]').forEach(b=>b.onclick=()=>{let q=questData.find(q=>q.id===b.dataset.claim);if(!q||db.game.quests.includes(q.id)||!q.check())return;db.game.quests.push(q.id);db.game.xp=(db.game.xp||0)+q.xp;db.game.coins=(db.game.coins||0)+q.coins;put();render()})}
 async function handlePasswordRecovery(){
  const params=new URLSearchParams(location.hash.slice(1));if(params.get('type')!=='recovery'||!params.get('access_token'))return;
- const token=params.get('access_token'),recovery=prompt('Bitte gib deinen persönlichen Vaping-Adventure-Wiederherstellungscode ein.');
- if(!recovery)return toast('Wiederherstellung abgebrochen.');
+ const token=params.get('access_token'),recoveryInput=prompt('Bitte gib deinen persönlichen Vaping-Adventure-Wiederherstellungscode ein.');
+ if(recoveryInput===null)return toast('Wiederherstellung abgebrochen.');
+ const recovery=recoveryInput.trim().toLowerCase();
+ if(!/^[a-f0-9]{48}$/.test(recovery))return toast('Der Wiederherstellungscode muss aus 48 hexadezimalen Zeichen bestehen.');
  const next=prompt('Bitte lege dein neues Login-Passwort fest (mindestens 8 Zeichen).');
- if(!next||next.length<8)return toast('Das neue Passwort muss mindestens 8 Zeichen haben.');
+ if(next===null||next.length<8)return toast('Das neue Passwort muss mindestens 8 Zeichen haben.');
+ const confirmation=prompt('Bitte gib das neue Login-Passwort zur Bestätigung erneut ein.');
+ if(confirmation===null||confirmation!==next)return toast('Die Passwörter stimmen nicht überein. Bitte starte die Wiederherstellung erneut.');
+ let passwordUpdated=false;
  try{
   const c=cloudConfig(),base=c.url.replace(/\/$/,'');
   const headers={apikey:c.apiKey,'Content-Type':'application/json',Authorization:'Bearer '+token};
@@ -183,11 +188,12 @@ async function handlePasswordRecovery(){
   const ps=crypto.getRandomValues(new Uint8Array(16)),pk=await deriveCloudKey(next,ps),pw=await aesWrap(pk,raw);
   const update=await fetch(base+'/auth/v1/user',{method:'PUT',headers,body:JSON.stringify({password:next})});
   const ud=await update.json().catch(()=>({}));if(!update.ok)throw Error(ud.msg||ud.message||'Neues Passwort konnte nicht gespeichert werden.');
+  passwordUpdated=true;
   env.password={salt:b64(ps),...pw};
   const write=await fetch(base+'/rest/v1/mva_saves?on_conflict=user_id',{method:'POST',headers:{...headers,Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:userData.id,payload:box,updated_at:new Date().toISOString()})});
   if(!write.ok)throw Error('Der neue Verschlüsselungsschlüssel konnte nicht gespeichert werden. Bitte melde dich beim Support.');
   history.replaceState(null,'',location.pathname+location.search);toast('Passwort und Verschlüsselung wurden aktualisiert. Du kannst dich jetzt mit dem neuen Passwort anmelden.');
- }catch(e){console.error(e);toast(e.message||'Wiederherstellung fehlgeschlagen. Prüfe den Code und versuche es erneut.')}
+ }catch(e){console.error(e);toast(passwordUpdated?'Das Login-Passwort wurde geändert, aber der Cloud-Schlüssel noch nicht aktualisiert. Fordere einen neuen Wiederherstellungslink an und verwende denselben Code.':(e.message||'Wiederherstellung fehlgeschlagen. Prüfe den Code und versuche es erneut.'))}
 }
 function newBoot(){db.entries=db.entries.map(e=>{let m=String(e.notes||'').match(/(?:anzahl\s*)?(?:züge|zuege|puffs?)\s*[:=]?\s*(\d+)/i);if(!e.puffs&&m)e.puffs=m[1];return e});put();render()}
 handlePasswordRecovery();
