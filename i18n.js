@@ -135,11 +135,11 @@
   }
   function translateNode(node) {
     if (node.nodeType === Node.TEXT_NODE) {
-      if (node.parentElement?.closest("[data-i18n-switch]")) return;
+      if (node.parentElement?.closest("[data-i18n-switch],[data-user-content],input,textarea,select,[contenteditable=true],.item-content,.photo,.tagline")) return;
       const next = translateText(node.nodeValue);
       if (next !== node.nodeValue) node.nodeValue = next;
     } else if (node.nodeType === Node.ELEMENT_NODE) {
-      if (node.matches("[data-i18n-switch]")) return;
+      if (node.matches("[data-i18n-switch],[data-user-content],input,textarea,select,[contenteditable=true],.item-content,.photo,.tagline")) return;
       for (const attr of ["placeholder","title","aria-label"]) {
         const value = node.getAttribute(attr);
         if (value) {
