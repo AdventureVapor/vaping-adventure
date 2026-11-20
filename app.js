@@ -191,7 +191,10 @@ async function handlePasswordRecovery(){
   const read=await fetch(base+'/rest/v1/mva_saves?select=payload&user_id=eq.'+encodeURIComponent(userData.id)+'&limit=1',{headers});
   const rows=await read.json().catch(()=>[]);if(!read.ok)throw Error('Cloud-Spielstand konnte nicht gelesen werden.');
   const box=rows?.[0]?.payload;if(!box||box.v!==2||box.envelope?.v!==1||!box.envelope.recovery)throw Error('Für diesen Cloud-Spielstand ist kein Wiederherstellungscode eingerichtet. Ein älteres Backup (Format 1) kann damit nicht wiederhergestellt werden.');
-  const env=box.envelope,rk=await deriveCloudKey(recovery,unb64(env.recovery.salt)),raw=await aesUnwrap(rk,env.recovery);
+  const env=box.envelope;
+  let raw;
+  try{const rk=await deriveCloudKey(recovery,unb64(env.recovery.salt));raw=await aesUnwrap(rk,env.recovery)}
+  catch{throw Error('Der Wiederherstellungscode ist ungültig oder passt nicht zu diesem Cloud-Spielstand.')}
   const ps=crypto.getRandomValues(new Uint8Array(16)),pk=await deriveCloudKey(next,ps),pw=await aesWrap(pk,raw);
   const update=await fetch(base+'/auth/v1/user',{method:'PUT',headers,body:JSON.stringify({password:next})});
   const ud=await update.json().catch(()=>({}));if(!update.ok)throw Error(ud.msg||ud.message||'Neues Passwort konnte nicht gespeichert werden.');
