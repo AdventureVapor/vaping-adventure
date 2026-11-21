@@ -136,3 +136,19 @@ Die folgenden Funktionen aus dem aktuellen Produktionsstand wurden gezielt in Al
 - [ ] E-Mail-Änderung mit Bestätigungslink vollständig testen
 - [ ] Galerie, Lightbox und Navigation nach der Übernahme durchtesten
 - [ ] Cloud-Synchronisierung und Kontentrennung mit zwei Konten testen
+
+## Version 1.4 – Darstellung und Design-Themen
+
+Ziel: Nutzer können das optische Erscheinungsbild der gesamten Anwendung über einen eigenen Menüpunkt **„Darstellung“** personalisieren.
+
+- [ ] Eigenen Menüpunkt „Darstellung“ in der Navigation vorsehen
+- [ ] Erste Design-Vorlagen für die Themenauswahl erstellen
+- [ ] Zum Start 5 Design-Themen anbieten; die Auswahl kann später auf 5–10 oder mehr Themen erweitert werden
+- [ ] Design-Themen für die komplette Seite gestalten (z. B. Hintergrund, Flächen, Karten, Eingabefelder, Schaltflächen, Navigation, Menüs, Rahmen und Akzentfarben)
+- [ ] Nach Sichtung der ersten Vorlagen gemeinsam den genauen Umfang und Stil der Themen festlegen
+- [ ] Vorschau beim Auswählen eines Themas ermöglichen
+- [ ] Ausgewähltes Thema dauerhaft speichern und beim nächsten Besuch wiederherstellen
+- [ ] Standarddesign bzw. ursprüngliches Design jederzeit wiederherstellen
+
+Die Seitenstruktur und Bedienlogik sollen bei allen Themen gleich bleiben; verändert wird das visuelle Erscheinungsbild. Die konkrete Gestaltung wird erst nach Erstellung und gemeinsamer Sichtung der ersten Vorlagen festgelegt.
+
