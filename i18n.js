@@ -23,6 +23,7 @@
     "Suche in Einträgen …":"Search entries …","Alle Geräte":"All devices","Alle Kategorien":"All categories",
     "Neueste zuerst":"Newest first","Älteste zuerst":"Oldest first","Bearbeiten":"Edit","Löschen":"Delete",
     "Keine Einträge gefunden":"No entries found","Passe deine Suche an oder dokumentiere eine neue Session.":"Adjust your search or record a new session.",
+    "Fertig":"Done",
     "Schließen":"Close","Abbrechen":"Cancel","Speichern":"Save","Gerät auswählen (optional)":"Select device (optional)",
     "Eintrag bearbeiten":"Edit entry","Neue Session":"New session","Datum":"Date","Uhrzeit":"Time",
     "Geräteklasse":"Device type","Gerät":"Device","Sorte / Material":"Strain / material",
@@ -64,6 +65,7 @@
     "Du entscheidest, wo gespeichert wird.":"You decide where your data is stored.",
     "Wähle lokalen Speicher oder richte eine clientseitig verschlüsselte Cloud ein.":"Choose local storage or set up a client-side encrypted cloud.",
     "Speicher & Backup →":"Storage & backup →",
+     "Speicher & Backup":"Storage & backup",
     "Akkusicherheit":"Battery safety",
     "Reinigung & Pflege":"Cleaning & care",
     "Gerätekunde":"Device knowledge",
@@ -78,10 +80,17 @@
     "Wechsle zwischen lokalem Spielstand und verschlüsselter Cloud. Exportiere zusätzlich ein Backup.":"Switch between local game data and encrypted cloud storage. You can also export a backup.",
     "AKTIV · VERSCHLÜSSELT":"ACTIVE · ENCRYPTED","Cloud-Konto:":"Cloud account:",
     "Spielstände werden vor dem Senden mit AES-GCM verschlüsselt. Dein Kennwort wird nur für die Anmeldung verwendet und bleibt im Arbeitsspeicher dieser Sitzung.":"Game data is encrypted with AES-GCM before being sent. Your password is only used to sign in and remains in this session's memory.",
+    "Deine Konto-ID und dein verschlüsselter Cloud-Spielstand bleiben erhalten.":"Your account ID and encrypted cloud save will remain unchanged.",
+    "Passwort ändern":"Change password",
+    "Ändere dein Anmeldepasswort direkt, ohne den Weg über „Passwort vergessen“ zu nehmen. Dein verschlüsselter Cloud-Spielstand wird dabei mit dem neuen Passwort verknüpft.":"Change your sign-in password directly without using “Forgot password?”. Your encrypted cloud save will be re-linked using the new password.",
+    "Bisheriges Passwort":"Current password",
+    "Neues Passwort (mindestens 8 Zeichen)":"New password (at least 8 characters)",
+    "Neues Passwort wiederholen":"Repeat new password",
     "Zu lokalem Spielstand wechseln":"Switch to local game data","OPTIONAL · AES-GCM":"OPTIONAL · AES-GCM",
     "Verschlüsselte Cloud":"Encrypted cloud","Mit E-Mail-Adresse und Kennwort anmelden. Der Cloud-Spielstand ist vom lokalen Spielstand getrennt. Beim ersten Verbinden kannst du vorhandene lokale Daten verschlüsselt hochladen.":"Sign in with your email address and password. Cloud data is separate from local data. The first time you connect, you can upload your existing local data in encrypted form.",
     "Einmalige Einrichtung erforderlich: Supabase-Projekt konfigurieren. Siehe cloud-setup.md.":"One-time setup required: configure a Supabase project. See cloud-setup.md.",
-    "E-Mail-Adresse":"Email address","Kennwort · mindestens 8 Zeichen":"Password · at least 8 characters",
+    "E-Mail-Adresse":"Email address",
+    "E-Mail-Adresse (bei älteren Konten: bisheriger Benutzername)":"Email address (existing username for older accounts)","Kennwort · mindestens 8 Zeichen":"Password · at least 8 characters",
     "Anmelden":"Sign in","Registrieren":"Create account","Passwort vergessen?":"Forgot password?",
     "Du erhältst eine E-Mail zur Bestätigung. Jeder Account hat ausschließlich Zugriff auf seinen eigenen Cloud-Spielstand.":"You will receive a confirmation email. Each account can only access its own cloud save.",
     "EMPFOHLEN":"RECOMMENDED","JSON-Backup":"JSON backup",
@@ -126,7 +135,7 @@
     "Neue Einträge übernehmen":"Import new entries","mögliche Duplikate":"possible duplicates","erkannt":"detected","neu":"new",
     "Bitte eine gültige E-Mail-Adresse eingeben.":"Please enter a valid email address.",
     "Wir unterstützen den:":"We support:",
-    "Dein Profil":"Your profile","Gastmodus":"Guest mode","Du bist aktuell nicht mit einem Cloud-Konto angemeldet.":"You are not currently signed in to a cloud account.",
+    "Dein Profil":"Your profile","Abmelden":"Sign out","Gastmodus":"Guest mode","Du bist aktuell nicht mit einem Cloud-Konto angemeldet.":"You are not currently signed in to a cloud account.",
     "Verschlüsselte Cloud aktiv":"Encrypted cloud active","Nur auf diesem Gerät gespeichert":"Stored on this device only",
     "Speicher & Backup öffnen →":"Open storage & backup →","Cloud-Konto verbinden →":"Connect cloud account →",
     "Profil von ":"Profile of "," öffnen":" open","Profilmenü öffnen":"Open profile menu","Hilfe-Bibliothek öffnen":"Open help library",
@@ -135,6 +144,10 @@
     "Bewahre ihn sicher und getrennt von deinem Gerät auf. Er wird nur einmal angezeigt. Ohne diesen Code kann ein Passwort-Reset den verschlüsselten Spielstand nicht wiederherstellen.":"Keep it safe and separate from your device. It is shown only once. Without this code, a password reset cannot restore your encrypted save.",
     "Registrierung fehlgeschlagen":"Registration failed","Bitte E-Mail-Adresse oder bisherigen Benutzernamen eingeben.":"Please enter your email address or previous username.",
     "Registrierung angelegt. Bitte bestätige zuerst den Link in deiner E-Mail und melde dich danach mit deiner E-Mail-Adresse an.":"Registration created. Please confirm the link in your email, then sign in with your email address.",
+    "Lokalen Spielstand hochladen":"Upload local save",
+    "Ersetzt den bisherigen Cloud-Spielstand mit den Daten dieses Browsers.":"Replaces the existing cloud save with the data from this browser.",
+    "Cloud-Spielstand laden":"Load cloud save",
+    "Sorten":"strains",
     "Spielstand auswählen":"Choose save data","Auswahl übernehmen":"Confirm selection",
     "Wirklich den lokalen Spielstand hochladen und den bisherigen Cloud-Spielstand ersetzen?":"Are you sure you want to upload the local save and replace the existing cloud save?",
     "Cloud-Übertragung fehlgeschlagen":"Cloud transfer failed","Upload fehlgeschlagen. Deine lokalen Daten bleiben erhalten.":"Upload failed. Your local data will be kept.",
@@ -200,72 +213,191 @@
     "Bisheriges Cloud-Verschlüsselungskennwort (nur falls abweichend)":"Previous cloud encryption password (only if different)",
     "Dein Benutzername bleibt als Profilname erhalten. Nach der Umstellung meldest du dich mit deiner E-Mail-Adresse an. Bestehende Cloud-Spielstände bleiben beim E-Mail-Wechsel am selben Konto.":"Your username will remain as your profile name. After the change, you will sign in with your email address. Existing cloud saves remain linked to the same account when you change your email.",
     "Exportiere deine Tagebucheinträge oder importiere eine CSV mit Vorschau und Duplikaterkennung.":"Export your diary entries or import a CSV with a preview and duplicate detection.",
+    "CLOUD-SPIELSTAND AKTIV":"CLOUD SAVE ACTIVE",
+    "LOKALER SPIELSTAND AKTIV":"LOCAL SAVE ACTIVE",
+    "Das verwendete Tagebuch":"The active diary",
+    "Du arbeitest gerade mit dem verschlüsselten Cloud-Spielstand von ":"You are currently using the encrypted cloud save for ",
+    "deinem Konto":"your account",
+    ". Änderungen werden mit der Cloud synchronisiert. Dein lokaler Spielstand auf diesem Gerät bleibt getrennt und unverändert.":". Changes are synchronized with the cloud. Your local save on this device remains separate and unchanged.",
+    "Du arbeitest gerade mit dem lokalen Spielstand dieses Geräts. Diese Daten werden nicht automatisch mit deinem Cloud-Konto synchronisiert.":"You are currently using this device’s local save. This data is not automatically synchronized with your cloud account.",
+    "Tagebucheinträge":"diary entries",
+    "📱 LOKALER SPIELSTAND AKTIV":"📱 LOCAL SAVE ACTIVE",
+    "☁️ CLOUD-SPIELSTAND AKTIV":"☁️ CLOUD SAVE ACTIVE",
+    "Tagebucheinträge · ":"diary entries · ",
     "Öffnen →":"Open →",
+
+    "Hilfe":"Help",
+    "Hilfe-Bibliothek":"Help library",
+    "Hilfe durchsuchen …":"Search help …",
+    "Willkommen bei My Vaping Adventure. Hier findest du kurze Erklärungen zu allen Bereichen und Funktionen.":"Welcome to My Vaping Adventure. Here you will find short explanations of all sections and features.",
+    "Erste Schritte":"Getting started",
+    "Auf der Übersicht findest du deine wichtigsten Zahlen und die zuletzt erfassten Sessions. Über die Navigation wechselst du zwischen den Bereichen.":"The overview shows your key statistics and most recently recorded sessions. Use the navigation to move between sections.",
+    "Vaping Diary – Tagebuch":"Vaping Diary",
+    "Mit „Neuer Eintrag“ dokumentierst du Datum, Uhrzeit, Gerät, Sorte, Züge, Temperatur, Ort und Notizen. Vorhandene Einträge kannst du bearbeiten oder löschen. Die Suche und Filter helfen beim Wiederfinden.":"Use “New entry” to record the date, time, device, strain, draws, temperature, location and notes. You can edit or delete existing entries. Search and filters help you find them again.",
+    "Strain Collection – Sorten":"Strain Collection",
+    "Lege Sorten in deiner Sammlung an und ergänze ihre Angaben. THC- und CBD-Werte kannst du als Prozentangaben eintragen, sofern du verlässliche Produktinformationen hast.":"Add strains to your collection and enter their details. You can enter THC and CBD values as percentages if you have reliable product information.",
+    "Verwalte deine Vaporizer, E-Zigaretten und Tabakerhitzer. Du kannst Geräte ergänzen, bearbeiten und mit Fotos dokumentieren. Bilder werden innerhalb der Geräte-Karten passend dargestellt.":"Manage your vaporizers, e-cigarettes and tobacco heaters. You can add and edit devices and document them with photos. Images are displayed within the device cards.",
+    "Photo Gallery – Fotos":"Photo Gallery",
+    "Füge Bilder hinzu, um besondere Geräte, Setups oder Momente festzuhalten. Achte darauf, regelmäßig ein Backup zu erstellen, wenn du viele Fotos speicherst.":"Add images to capture special devices, setups or moments. Remember to create backups regularly if you store many photos.",
+    "Quests & Ziele":"Quests & Goals",
+    "Quests belohnen deinen Fortschritt mit Erfahrungspunkten und Coins. Erledigte Aufgaben und dein Level werden mit deinem Spielstand gespeichert.":"Quests reward your progress with experience points and coins. Completed tasks and your level are saved with your game data.",
+    "Education – Lernbereich":"Education – Learning area",
+    "Hier findest du Lerninhalte und Kurse, zum Beispiel zu Gerätekunde, Reinigung und Akkusicherheit. Dein Lernfortschritt gehört zu deinem Spielstand.":"Here you will find learning content and courses, for example on device knowledge, cleaning and battery safety. Your learning progress is part of your saved game data.",
+    "Lokal speichern":"Local storage",
+    "Im lokalen Modus liegen deine Daten im Browser auf genau diesem Gerät. Sie werden nicht automatisch auf andere Geräte übertragen. Browserdaten löschen oder ein Gerätewechsel kann lokale Daten entfernen.":"In local mode, your data is stored in the browser on this device only. It is not automatically transferred to other devices. Clearing browser data or changing devices may remove local data.",
+    "Verschlüsselte Cloud":"Encrypted cloud",
+    "Du kannst dich mit deinem Konto anmelden und deinen Spielstand geräteübergreifend synchronisieren. Die Daten werden vor dem Hochladen im Browser verschlüsselt. Bewahre dein Verschlüsselungskennwort sicher auf.":"You can sign in to your account and synchronize your saved game data across devices. The data is encrypted in your browser before uploading. Keep your encryption password safe.",
+    "Backup & Wiederherstellung":"Backup & recovery",
+    "Unter „Speicher & Backup“ kannst du ein vollständiges JSON-Backup herunterladen und später wieder einspielen. Einspielen ersetzt den aktiven Spielstand; erstelle deshalb vorher eine Sicherung. CSV eignet sich für den Export und Import von Tagebucheinträgen.":"Under “Storage & backup”, you can download a complete JSON backup and restore it later. Restoring replaces the active save, so create a backup first. CSV is suitable for exporting and importing diary entries.",
+    "Cloud-Spielstand auf das Gerät übernehmen":"Transfer cloud save to this device",
+    "Wenn du deinen Cloud-Spielstand dauerhaft in den lokalen Speicher dieses Geräts übernehmen möchtest: 1. Melde dich mit deinem Cloud-Konto an. 2. Öffne „Speicher & Backup“ und klicke bei „JSON-Backup“ auf „Backup herunterladen“. Damit sicherst du den gerade aktiven Cloud-Spielstand als Datei. 3. Wechsle anschließend über „Zu lokalem Spielstand wechseln“ beziehungsweise melde dich ab. 4. Im lokalen Modus öffnest du wieder „Speicher & Backup“, wählst unter „Backup einspielen“ die zuvor heruntergeladene JSON-Datei aus und klickst auf „JSON auswählen & einspielen“. Dadurch wird der lokale Spielstand durch den Cloud-Spielstand aus der Datei ersetzt. Wichtig: Nicht den lokalen Spielstand in die Cloud hochladen, wenn du die Cloud-Daten übernehmen möchtest. Bewahre die Backup-Datei sicher auf.":"If you want to permanently transfer your cloud save to this device’s local storage: 1. Sign in to your cloud account. 2. Open “Storage & backup” and click “Download backup” under “JSON backup”. This saves the currently active cloud data as a file. 3. Then switch to local storage using “Switch to local save” or sign out. 4. In local mode, open “Storage & backup” again, select the JSON file you downloaded under “Restore backup”, and click “Select & restore JSON”. This replaces the local save with the cloud save from the file. Important: Do not upload the local save to the cloud if you want to transfer cloud data. Keep the backup file safe.",
+    "Konto und Anmeldung":"Account and sign-in",
+    "Für die Cloud kannst du ein Konto mit E-Mail-Adresse und Passwort erstellen. Bestätige deine E-Mail-Adresse. Über die Passwort-zurücksetzen-Funktion kannst du einen Wiederherstellungslink anfordern.":"For cloud storage, you can create an account with an email address and password. Confirm your email address. You can request a recovery link using the password reset function.",
+    "Sprache einstellen":"Change language",
+    "Oben rechts findest du den Sprachschalter mit einer kleinen Flagge. Tippe auf „English“, um die Oberfläche auf Englisch umzustellen, oder auf „Deutsch“, um zurückzuwechseln. Deine Auswahl wird automatisch in diesem Browser gespeichert und beim nächsten Besuch wieder verwendet. Die Spracheinstellung ändert nur die Anzeigesprache – deine Tagebucheinträge, Notizen und persönlichen Inhalte bleiben unverändert. Wenn einzelne Bereiche nach dem Wechsel noch in der alten Sprache angezeigt werden, lade die Seite einmal neu.":"At the top right, you will find the language switch with a small flag. Tap “English” to change the interface to English, or “Deutsch” to switch back. Your choice is saved automatically in this browser and will be used on your next visit. The language setting changes only the display language — your diary entries, notes and personal content remain unchanged. If individual sections still appear in the previous language after switching, reload the page once.",
+    "Hilfe auf dem iPhone":"Help on iPhone",
+    "Die Seite passt sich auch kleinen Bildschirmen an. Unten findest du die mobile Navigation; unter „Mehr“ liegen weitere Bereiche wie Geräte, Fotos, Education und Backups.":"The page also adapts to small screens. You will find mobile navigation at the bottom; under “More” are additional sections such as Devices, Photos, Education and Backups."
+
   };
   const reverse = Object.fromEntries(Object.entries(pairs).map(([de,en])=>[en,de]));
   let language = localStorage.getItem("mva_language") || "de";
-  const dictionary = () => language === "en" ? pairs : reverse;
-  const sortedKeys = () => Object.keys(dictionary()).sort((a,b)=>b.length-a.length);
-  function translateText(value) {
-    let out = value;
-    for (const source of sortedKeys()) {
-      if (out.includes(source)) out = out.split(source).join(dictionary()[source]);
+  const textOriginal = new WeakMap();
+  const textRendered = new WeakMap();
+  const attrOriginal = new WeakMap();
+  const attrRendered = new WeakMap();
+  const excluded = "[data-i18n-switch],[data-user-content],input,textarea,select,[contenteditable=true],.item-content,.photo";
+  const keys = Object.keys(pairs).sort((a,b)=>b.length-a.length);
+  const reverseKeys = Object.keys(reverse).sort((a,b)=>b.length-a.length);
+
+  function translateText(value, targetLanguage) {
+    const dictionary = targetLanguage === "en" ? pairs : reverse;
+    const ordered = targetLanguage === "en" ? keys : reverseKeys;
+    let output = value;
+    for (const source of ordered) {
+      if (output.includes(source)) output = output.split(source).join(dictionary[source]);
     }
-    return out;
+    return output;
   }
+
+  function translateTextNode(node) {
+    if (!node.parentElement || node.parentElement.closest(excluded)) return;
+    const current = node.nodeValue;
+    let original = textOriginal.get(node);
+    const rendered = textRendered.get(node);
+
+    // If the app itself changed this node since our last pass, treat the
+    // new value as the canonical source (normally German).
+    if (original === undefined || (rendered !== undefined && current !== rendered)) {
+      original = current;
+      textOriginal.set(node, original);
+    }
+    const next = translateText(original, language);
+    if (current !== next) node.nodeValue = next;
+    textRendered.set(node, next);
+  }
+
+  function translateAttribute(element, name) {
+    const current = element.getAttribute(name);
+    if (current === null) return;
+    let originals = attrOriginal.get(element);
+    let rendereds = attrRendered.get(element);
+    if (!originals) { originals = new Map(); attrOriginal.set(element, originals); }
+    if (!rendereds) { rendereds = new Map(); attrRendered.set(element, rendereds); }
+    let original = originals.get(name);
+    const rendered = rendereds.get(name);
+    if (original === undefined || (rendered !== undefined && current !== rendered)) {
+      original = current;
+      originals.set(name, original);
+    }
+    const next = translateText(original, language);
+    if (current !== next) element.setAttribute(name, next);
+    rendereds.set(name, next);
+  }
+
   function translateNode(node) {
     if (node.nodeType === Node.TEXT_NODE) {
-      if (node.parentElement?.closest("[data-i18n-switch],[data-user-content],input,textarea,select,[contenteditable=true],.item-content,.photo")) return;
-      const next = translateText(node.nodeValue);
-      if (next !== node.nodeValue) node.nodeValue = next;
-    } else if (node.nodeType === Node.ELEMENT_NODE) {
-      if (node.matches("[data-i18n-switch],[data-user-content],input,textarea,select,[contenteditable=true],.item-content,.photo,.tagline")) return;
-      for (const attr of ["placeholder","title","aria-label"]) {
-        const value = node.getAttribute(attr);
-        if (value) {
-          const next = translateText(value);
-          if (next !== value) node.setAttribute(attr,next);
-        }
-      }
-      node.childNodes.forEach(translateNode);
+      translateTextNode(node);
+      return;
     }
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+    for (const attr of ["placeholder","title","aria-label"]) translateAttribute(node, attr);
+    if (node.matches(excluded)) return;
+    node.childNodes.forEach(translateNode);
   }
+
+  function updateSwitch() {
+    const button = document.querySelector("[data-i18n-switch]");
+    if (!button) return;
+    const flag = language === "de"
+      ? '<svg class="language-flag" viewBox="0 0 60 40" role="img" aria-label="United Kingdom"><rect width="60" height="40" fill="#012169"/><path d="M0 0 60 40M60 0 0 40" stroke="#fff" stroke-width="9"/><path d="M0 0 60 40M60 0 0 40" stroke="#c8102e" stroke-width="4"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="13"/><path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="7"/></svg>'
+      : '<svg class="language-flag" viewBox="0 0 60 40" role="img" aria-label="Deutschland"><rect width="60" height="13.333" fill="#000"/><rect y="13.333" width="60" height="13.334" fill="#dd0000"/><rect y="26.667" width="60" height="13.333" fill="#ffce00"/></svg>';
+    button.innerHTML = flag + (language === "de" ? '<span>English</span>' : '<span>Deutsch</span>');
+    button.setAttribute("aria-label", language === "de" ? "Switch to English" : "Zu Deutsch wechseln");
+  }
+
   function apply() {
     document.documentElement.lang = language;
-    const button = document.querySelector("[data-i18n-switch]");
-    if (button) {
-      button.innerHTML = language === "de" ? '<img class="language-flag" src="Bilder/flag-gb.svg" alt=""><span>English</span>' : '<img class="language-flag" src="Bilder/flag-de.svg" alt=""><span>Deutsch</span>';
-      button.setAttribute("aria-label", language === "de" ? "Switch to English" : "Zu Deutsch wechseln");
-    }
+    updateSwitch();
     document.body.childNodes.forEach(translateNode);
     document.querySelectorAll(".sidebar-note,.sidebar .nav-label,.sidebar .nav").forEach(translateNode);
   }
+
   function addSwitch() {
     const right = document.querySelector(".topright");
-    if (!right || document.querySelector("[data-i18n-switch]")) return;
-    const button = document.createElement("button");
-    button.className = "language-switch";
-    button.type = "button";
-    button.setAttribute("data-i18n-switch","");
+    if (!right) return;
+    let button = document.querySelector("[data-i18n-switch]");
+    if (!button) {
+      button = document.createElement("button");
+      button.className = "language-switch";
+      button.type = "button";
+      button.setAttribute("data-i18n-switch","");
+      right.insertBefore(button, right.firstChild);
+    }
+    // Always attach the handler: the switch already exists in index.html.
     button.addEventListener("click", () => {
       language = language === "de" ? "en" : "de";
-      localStorage.setItem("mva_language",language);
+      localStorage.setItem("mva_language", language);
       apply();
     });
-    right.insertBefore(button,right.firstChild);
-    apply();
+    updateSwitch();
   }
+
   const observer = new MutationObserver(records => {
-    if (language !== "en") return;
-    records.forEach(record => {
-      if (record.target?.closest?.("[data-i18n-switch]")) return;
-      record.addedNodes?.forEach(translateNode);
-    });
+    for (const record of records) {
+      if (record.type === "characterData") {
+        translateTextNode(record.target);
+      } else if (record.type === "attributes") {
+        if (!record.target.closest?.(excluded)) translateAttribute(record.target, record.attributeName);
+      } else {
+        record.addedNodes?.forEach(translateNode);
+      }
+    }
   });
-  document.addEventListener("DOMContentLoaded",() => {
+
+  function init() {
     addSwitch();
     apply();
-    observer.observe(document.body,{childList:true,subtree:true,characterData:true});
-  });
-  window.MVA_I18N = {getLanguage:()=>language,setLanguage(value){language=value==="en"?"en":"de";localStorage.setItem("mva_language",language);apply();}};
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ["placeholder","title","aria-label"]
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, {once:true});
+  } else {
+    init();
+  }
+
+  window.MVA_I18N = {
+    getLanguage: () => language,
+    setLanguage(value) {
+      language = value === "en" ? "en" : "de";
+      localStorage.setItem("mva_language", language);
+      apply();
+    }
+  };
 })();
