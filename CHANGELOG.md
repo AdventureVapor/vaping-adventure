@@ -2,7 +2,7 @@
 
 Alle relevanten Änderungen für My Vaping Adventure werden hier nachvollziehbar festgehalten.
 
-## Alpha 1.3 – Release Candidate
+## Version 1.3 – öffentliche Veröffentlichung
 **Stand: 21. November 2026**
 
 ### Konten und Cloud
@@ -36,4 +36,4 @@ Alle relevanten Änderungen für My Vaping Adventure werden hier nachvollziehbar
 - Synchronisierung zwischen iPhone und PC in beide Richtungen praktisch getestet.
 
 ### Status
-Alpha 1.3 ist weiterhin ein **Release Candidate**. Die Preview ist die aktive Testumgebung. Die Produktionsversion wird erst nach Abschluss der offenen QA-Punkte und ausdrücklicher Freigabe aktualisiert.
+Version 1.3 wurde am 21. November 2026 in den Produktionszweig `main` übernommen. Die Veröffentlichung ist erfolgt. Der vollständige Git-Historien-Secret-Scan und der Nachweis automatisierter CI-Prüfungen bleiben als technische Nacharbeiten dokumentiert.
