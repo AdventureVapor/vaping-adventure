@@ -2,7 +2,7 @@
 
 **Arbeitsstand:** Alpha 1.3  
 **Aktive Entwicklungsumgebung:** Preview  
-**Produktivversion:** bleibt bis zur abgeschlossenen Qualitätssicherung unverändert.
+**Produktivversion:** Version 1.3 wurde am 21. November 2026 veröffentlicht.
 
 Diese Roadmap dokumentiert umgesetzte und vom Nutzer bestätigte Funktionen sowie noch offene Prüfungen. Ein Häkchen bedeutet, dass die Funktion umgesetzt und – soweit sinnvoll – erfolgreich geprüft wurde.
 
@@ -64,7 +64,7 @@ Diese Roadmap dokumentiert umgesetzte und vom Nutzer bestätigte Funktionen sowi
 - [x] Speicher-/Datensicherungsseite auf fehlende englische Übersetzung geprüft und Satz ergänzt
 - [x] Nutzer bestätigt: Bei der abschließenden Durchsicht der Bereiche wurden keine weiteren Übersetzungsfehler gefunden
 
-## Noch offen – Alpha 1.3
+## Nach Veröffentlichung – technische Nacharbeiten zu Version 1.3
 
 ### Qualitätssicherung
 - [x] Doppelte Deklarationen von Hilfsfunktionen in app.js entfernt.
