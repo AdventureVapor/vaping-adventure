@@ -147,6 +147,7 @@ Diese Roadmap dokumentiert umgesetzte und vom Nutzer bestätigte Funktionen sowi
 ## Spätere Ausbaustufe
 
 ### Version 1.4 – Ideen / Planung
+- [ ] Gästebuch für Besucher: Einträge mit Name und Datum veröffentlichen; Moderations-/Löschmöglichkeit sowie Spam-Schutz vorsehen
 - [ ] Individuelle Registrierungs-/Bestätigungsmail gestalten (Absendername, Betreff, Text, Logo/Branding und Gestaltung; abhängig von Supabase-/SMTP-Anbieter)
 - [ ] Französische Sprache ergänzen
 - [ ] Französische Flagge und Übersetzungen integrieren
