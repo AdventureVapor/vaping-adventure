@@ -91,6 +91,10 @@ Diese Roadmap hält fest, was bereits vorhanden ist und welche Arbeiten bis zur 
 
 ## Version 1.4 – vorgemerkt
 
+- [x] Kontaktbereich mit responsivem Kontaktformular in den Bereich „Mehr“ integrieren
+- [x] Kontaktformular für Deutsch und Englisch ergänzen; Nachricht wird im persönlichen E-Mail-Programm vorbereitet
+- [ ] Kontaktformular auf iPhone und Desktop praktisch testen
+
 - [ ] Französische Sprache ergänzen
 - [ ] Französische Flagge im Sprachumschalter ergänzen
 - [ ] Benutzeroberfläche und Lerninhalte ins Französische übersetzen
