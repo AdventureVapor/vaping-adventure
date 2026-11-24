@@ -24,13 +24,50 @@ async function encryptCloud(data){if(!cloudKey)throw Error('Verschlüsselungssch
 async function decryptCloud(box){if(box?.v===2&&box.envelope?.v===1){let env=box.envelope,salt=unb64(env.password.salt),kek=await deriveCloudKey(cloudPassword,salt),raw=await aesUnwrap(kek,env.password),rawKey=await crypto.subtle.importKey('raw',raw,{name:'AES-GCM'},false,['encrypt','decrypt']);cloudKey=rawKey;cloudEnvelope=env;let plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(box.iv)},cloudKey,unb64(box.ciphertext));return JSON.parse(new TextDecoder().decode(plain))}if(box?.v!==1)throw Error('Unbekanntes Cloud-Backup-Format');cloudSalt=unb64(box.salt);cloudKey=await deriveCloudKey(cloudPassword,cloudSalt);cloudEnvelope=null;let plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(box.iv)},cloudKey,unb64(box.ciphertext));return JSON.parse(new TextDecoder().decode(plain))}
 async function createCloudEnvelope(password){let raw=crypto.getRandomValues(new Uint8Array(32)),dek=await crypto.subtle.importKey('raw',raw,{name:'AES-GCM'},false,['encrypt','decrypt']);let ps=crypto.getRandomValues(new Uint8Array(16)),pk=await deriveCloudKey(password,ps),pw=await aesWrap(pk,raw);let recovery=Array.from(crypto.getRandomValues(new Uint8Array(24)),x=>x.toString(16).padStart(2,'0')).join('');let rs=crypto.getRandomValues(new Uint8Array(16)),rk=await deriveCloudKey(recovery,rs),rw=await aesWrap(rk,raw);cloudKey=dek;cloudEnvelope={v:1,password:{salt:b64(ps),...pw},recovery:{salt:b64(rs),...rw}};return recovery}
 let cloudPassword='';
-async function cloudFetch(path,options={},retry=true){let c=cloudConfig(),res=await fetch(`${c.url.replace(/\/$/,'')}${path}`,{...options,headers:{apikey:c.apiKey,'Content-Type':'application/json',...(options.headers||{})}});if(res.status===401&&retry&&cloudSession?.refreshToken&&!path.startsWith('/auth/')){let rr=await fetch(`${c.url.replace(/\/$/,'')}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:{apikey:c.apiKey,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:cloudSession.refreshToken})}),rd=await rr.json().catch(()=>({}));if(rr.ok){cloudSession.token=rd.access_token;cloudSession.refreshToken=rd.refresh_token;let headers={...(options.headers||{}),Authorization:`Bearer ${cloudSession.token}`};return cloudFetch(path,{...options,headers},false)}}let body=await res.text(),data=body?JSON.parse(body):null;if(!res.ok)throw Error(data?.msg||data?.message||data?.error_description||data?.hint||`Cloud-Fehler (${res.status})`);return data}
+async function cloudFetch(path,options={},retry=true){let c=cloudConfig(),res=await fetch(`${c.url.replace(/\/$/,'')}${path}`,{...options,headers:{apikey:c.apiKey,'Content-Type':'application/json',...(options.headers||{})}});if(res.status===401&&retry&&cloudSession?.refreshToken&&!path.startsWith('/auth/')){let rr=await fetch(`${c.url.replace(/\/$/,'')}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:{apikey:c.apiKey,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:cloudSession.refreshToken})}),rd=await rr.json().catch(()=>({}));if(rr.ok){cloudSession.token=rd.access_token;cloudSession.refreshToken=rd.refresh_token;let headers={...(options.headers||{}),Authorization:`Bearer ${cloudSession.token}`};return cloudFetch(path,{...options,headers},false)}}let body=await res.text(),data=body?JSON.parse(body):null;if(!res.ok){let error=Error(data?.msg||data?.message||data?.error_description||data?.hint||`Cloud-Fehler (${res.status})`);error.status=res.status;throw error}return data}
 async function cloudAuth(identifier,password){if(!cloudReady())throw Error('Cloud ist noch nicht eingerichtet. Folge der Anleitung in cloud-setup.md.');let loginEmail=identifier.includes('@')?identifier.trim().toLowerCase():`${identifier.trim().toLowerCase()}@mva.invalid`;let d=await cloudFetch('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:loginEmail,password})});return {token:d.access_token,refreshToken:d.refresh_token,userId:d.user.id,email:d.user.email}}
 async function cloudSignup(email,password){if(!cloudReady())throw Error('Cloud ist noch nicht eingerichtet.');let d=await cloudFetch('/auth/v1/signup?redirect_to='+encodeURIComponent(location.origin+location.pathname),{method:'POST',body:JSON.stringify({email,password})});return d}
 async function cloudResetEmail(email){let c=cloudConfig();let res=await fetch(`${c.url.replace(/\/$/,'')}/auth/v1/recover?redirect_to=${encodeURIComponent(location.origin+location.pathname)}`,{method:'POST',headers:{apikey:c.apiKey,'Content-Type':'application/json'},body:JSON.stringify({email})});let d=await res.json().catch(()=>({}));if(!res.ok)throw Error(d.msg||d.message||d.error_description||'E-Mail konnte nicht versendet werden')}
 async function cloudRead(){let rows=await cloudFetch(`/rest/v1/mva_saves?select=payload&user_id=eq.${encodeURIComponent(cloudSession.userId)}&limit=1`,{headers:{Authorization:`Bearer ${cloudSession.token}`}});return rows?.[0]?.payload||null}
-async function cloudWrite(){if(!cloudSession||!cloudKey)return;let payload=await encryptCloud(db);await cloudFetch('/rest/v1/mva_saves?on_conflict=user_id',{method:'POST',headers:{Authorization:`Bearer ${cloudSession.token}`,Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:cloudSession.userId,payload,updated_at:new Date().toISOString()})});setCloudStatus('Cloud gespeichert')}
-function scheduleCloudSave(){if(!cloudSession||!cloudKey)return;setCloudStatus('Änderungen werden gespeichert …');clearTimeout(cloudTimer);cloudTimer=setTimeout(()=>cloudWrite().catch(e=>{console.error(e);setCloudStatus('Cloud-Speicherung fehlgeschlagen');toast('Cloud-Speicherung fehlgeschlagen: '+(e.message||'Bitte Verbindung prüfen.')) }),700)}
+let cloudSaveQueue=Promise.resolve(),cloudSaveRevision=0;
+function queueCloudWrite(revision){
+ if(!cloudSession||!cloudKey)return Promise.resolve();
+ const task=cloudSaveQueue.catch(()=>{}).then(async()=>{
+  if(!cloudSession||!cloudKey)return;
+  const session=cloudSession,snapshot=JSON.parse(JSON.stringify(db));
+  const payload=await encryptCloud(snapshot);
+  let lastError;
+  for(let attempt=0;attempt<3;attempt++){
+   try{
+    await cloudFetch('/rest/v1/mva_saves?on_conflict=user_id',{method:'POST',headers:{Authorization:`Bearer ${session.token}`,Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:session.userId,payload,updated_at:new Date().toISOString()})});
+    if(revision===cloudSaveRevision&&session===cloudSession)setCloudStatus('Cloud gespeichert');
+    return;
+   }catch(error){
+    lastError=error;
+    const status=error.status;
+    const transient=!status||[408,425,429,500,502,503,504].includes(status);
+    if(!transient||attempt===2)throw error;
+    await new Promise(resolve=>setTimeout(resolve,500*Math.pow(2,attempt)));
+   }
+  }
+  throw lastError;
+ });
+ cloudSaveQueue=task.catch(()=>{});
+ return task;
+}
+function cloudWrite(){return queueCloudWrite(++cloudSaveRevision)}
+function scheduleCloudSave(){
+ if(!cloudSession||!cloudKey)return;
+ const revision=++cloudSaveRevision;
+ setCloudStatus('Änderungen werden gespeichert …');
+ clearTimeout(cloudTimer);
+ cloudTimer=setTimeout(()=>queueCloudWrite(revision).catch(e=>{
+  console.error(e);
+  if(revision!==cloudSaveRevision)return;
+  setCloudStatus('Cloud-Speicherung fehlgeschlagen');
+  toast('Cloud-Speicherung fehlgeschlagen: '+(e.message||'Bitte Verbindung prüfen.'));
+ }),700);
+}
 function setCloudStatus(text){let el=$('#storage-status');if(el)el.innerHTML=`<i></i> ${esc(text)}`}
 function authEmail(){return $('#cloud-email')?.value.trim().toLowerCase()||''}
 function showRecoveryCode(code){openModal('Dein Wiederherstellungscode',`<p class="subheading">Bewahre diesen Code sicher außerhalb dieses Geräts auf. Du benötigst ihn, um dein verschlüsseltes Tagebuch nach einem Passwort-Reset wieder zu öffnen.</p><div class="formrow" style="margin:16px 0"><label for="recovery-code-value">Wiederherstellungscode</label><input class="field" id="recovery-code-value" type="text" readonly value="${esc(code)}" style="font-family:monospace;font-size:15px;letter-spacing:.04em"></div><button class="btn soft" type="button" id="copy-recovery-code" style="width:100%">Code kopieren</button><p class="tagline" id="recovery-copy-status" aria-live="polite">Der Code wird nur einmal angezeigt. Speichere ihn jetzt sicher.</p>`,'Fertig',()=>{ $('#modal-root').innerHTML=''; });let input=$('#recovery-code-value'),copy=$('#copy-recovery-code'),status=$('#recovery-copy-status');copy.onclick=async()=>{try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(code)}else{input.focus();input.select();if(!document.execCommand('copy'))throw Error('copy failed')}status.textContent='✓ Wiederherstellungscode wurde kopiert.';copy.textContent='Erfolgreich kopiert'}catch{input.focus();input.select();status.textContent='Bitte den markierten Code mit Strg+C kopieren.'}};input.addEventListener('click',()=>input.select());}
