@@ -29,8 +29,45 @@ async function cloudAuth(identifier,password){if(!cloudReady())throw Error('Clou
 async function cloudSignup(email,password){if(!cloudReady())throw Error('Cloud ist noch nicht eingerichtet.');let d=await cloudFetch('/auth/v1/signup?redirect_to='+encodeURIComponent(location.origin+location.pathname),{method:'POST',body:JSON.stringify({email,password})});return d}
 async function cloudResetEmail(email){let c=cloudConfig();let res=await fetch(`${c.url.replace(/\/$/,'')}/auth/v1/recover?redirect_to=${encodeURIComponent(location.origin+location.pathname)}`,{method:'POST',headers:{apikey:c.apiKey,'Content-Type':'application/json'},body:JSON.stringify({email})});let d=await res.json().catch(()=>({}));if(!res.ok)throw Error(d.msg||d.message||d.error_description||'E-Mail konnte nicht versendet werden')}
 async function cloudRead(){let rows=await cloudFetch(`/rest/v1/mva_saves?select=payload&user_id=eq.${encodeURIComponent(cloudSession.userId)}&limit=1`,{headers:{Authorization:`Bearer ${cloudSession.token}`}});return rows?.[0]?.payload||null}
-async function cloudWrite(){if(!cloudSession||!cloudKey)return;let payload=await encryptCloud(db);await cloudFetch('/rest/v1/mva_saves?on_conflict=user_id',{method:'POST',headers:{Authorization:`Bearer ${cloudSession.token}`,Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:cloudSession.userId,payload,updated_at:new Date().toISOString()})});setCloudStatus('Cloud gespeichert')}
-function scheduleCloudSave(){if(!cloudSession||!cloudKey)return;setCloudStatus('Änderungen werden gespeichert …');clearTimeout(cloudTimer);cloudTimer=setTimeout(()=>cloudWrite().catch(e=>{console.error(e);setCloudStatus('Cloud-Speicherung fehlgeschlagen');toast('Cloud-Speicherung fehlgeschlagen: '+(e.message||'Bitte Verbindung prüfen.')) }),700)}
+let cloudSaveQueue=Promise.resolve(),cloudSaveRevision=0;
+function queueCloudWrite(revision){
+ if(!cloudSession||!cloudKey)return Promise.resolve();
+ const task=cloudSaveQueue.catch(()=>{}).then(async()=>{
+  if(!cloudSession||!cloudKey)return;
+  const session=cloudSession,snapshot=JSON.parse(JSON.stringify(db));
+  const payload=await encryptCloud(snapshot);
+  let lastError;
+  for(let attempt=0;attempt<3;attempt++){
+   try{
+    await cloudFetch('/rest/v1/mva_saves?on_conflict=user_id',{method:'POST',headers:{Authorization:`Bearer ${session.token}`,Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:session.userId,payload,updated_at:new Date().toISOString()})});
+    if(revision===cloudSaveRevision&&session===cloudSession)setCloudStatus('Cloud gespeichert');
+    return;
+   }catch(error){
+    lastError=error;
+    const status=error.status;
+    const transient=!status||[408,425,429,500,502,503,504].includes(status);
+    if(!transient||attempt===2)throw error;
+    await new Promise(resolve=>setTimeout(resolve,500*Math.pow(2,attempt)));
+   }
+  }
+  throw lastError;
+ });
+ cloudSaveQueue=task.catch(()=>{});
+ return task;
+}
+function cloudWrite(){return queueCloudWrite(++cloudSaveRevision)}
+function scheduleCloudSave(){
+ if(!cloudSession||!cloudKey)return;
+ const revision=++cloudSaveRevision;
+ setCloudStatus('Änderungen werden gespeichert …');
+ clearTimeout(cloudTimer);
+ cloudTimer=setTimeout(()=>queueCloudWrite(revision).catch(e=>{
+  console.error(e);
+  if(revision!==cloudSaveRevision)return;
+  setCloudStatus('Cloud-Speicherung fehlgeschlagen');
+  toast('Cloud-Speicherung fehlgeschlagen: '+(e.message||'Bitte Verbindung prüfen.'));
+ }),700);
+}
 function setCloudStatus(text){let el=$('#storage-status');if(el)el.innerHTML=`<i></i> ${esc(text)}`}
 function authEmail(){return $('#cloud-email')?.value.trim().toLowerCase()||''}
 function showRecoveryCode(code){openModal('Dein Wiederherstellungscode',`<p class="subheading">Bewahre diesen Code sicher außerhalb dieses Geräts auf. Du benötigst ihn, um dein verschlüsseltes Tagebuch nach einem Passwort-Reset wieder zu öffnen.</p><div class="formrow" style="margin:16px 0"><label for="recovery-code-value">Wiederherstellungscode</label><input class="field" id="recovery-code-value" type="text" readonly value="${esc(code)}" style="font-family:monospace;font-size:15px;letter-spacing:.04em"></div><button class="btn soft" type="button" id="copy-recovery-code" style="width:100%">Code kopieren</button><p class="tagline" id="recovery-copy-status" aria-live="polite">Der Code wird nur einmal angezeigt. Speichere ihn jetzt sicher.</p>`,'Fertig',()=>{ $('#modal-root').innerHTML=''; });let input=$('#recovery-code-value'),copy=$('#copy-recovery-code'),status=$('#recovery-copy-status');copy.onclick=async()=>{try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(code)}else{input.focus();input.select();if(!document.execCommand('copy'))throw Error('copy failed')}status.textContent='✓ Wiederherstellungscode wurde kopiert.';copy.textContent='Erfolgreich kopiert'}catch{input.focus();input.select();status.textContent='Bitte den markierten Code mit Strg+C kopieren.'}};input.addEventListener('click',()=>input.select());}
